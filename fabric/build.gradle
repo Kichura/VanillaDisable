@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'fabric-loom' version '1.5.+'
+    id 'fabric-loom' version '1.6.+'
 }
 base {
     archivesName = "${mod_id}-fabric-mc${minecraft_version}-${mod_version}"
@@ -26,6 +26,7 @@ loom {
     accessWidenerPath.set(project(":common").file("src/main/resources/${mod_id}.aw"))
     mixin {
         defaultRefmapName.set("${mod_id}.refmap.json")
+        useLegacyMixinAp = false
     }
     runs {
         client {

@@ -276,7 +276,6 @@ public class CommandConfigScreen extends Screen {
                     .displayOnlyValue()
                     .withCustomNarration(booleanCycleButton -> booleanCycleButton.createDefaultNarrationMessage().append("\n").append(main))
                     .create(10, 5, 44, 20, Component.literal(main), (button, value1) -> {
-                        System.out.println(value1);
                         CommandDataHandler.setValue(table, selected, main, Boolean.toString(value1), false);
                         ++CommandConfigScreen.this.setValues;
                     });

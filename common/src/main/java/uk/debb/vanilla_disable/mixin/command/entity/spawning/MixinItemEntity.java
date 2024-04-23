@@ -22,6 +22,7 @@ public abstract class MixinItemEntity {
     @Shadow
     private int pickupDelay;
 
+    @SuppressWarnings("resource")
     @Inject(method = "tick", at = @At("HEAD"))
     private void vanillaDisable$tick(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;

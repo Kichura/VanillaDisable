@@ -25,7 +25,7 @@ public abstract class MixinGameRulesCategory {
 
     static {
         ArrayList<GameRules.Category> vals = new ArrayList<>(Arrays.asList($VALUES));
-        GameRules.Category last = vals.get(vals.size() - 1);
+        GameRules.Category last = vals.getLast();
         vals.add(vanillaDisable$init("VANILLA_DISABLE", last.ordinal() + 1, "vd.gamerule.category.vanilla_disable"));
         $VALUES = vals.toArray(new GameRules.Category[0]);
     }

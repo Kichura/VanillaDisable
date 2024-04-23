@@ -24,7 +24,7 @@ public abstract class MixinLivingEntity {
         if (CommandDataHandler.isConnectionNull()) return original;
         String entity = CommandDataHandler.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
         return CommandDataHandler.getCachedBoolean("entities", entity,
-                CommandDataHandler.lightCleanup(Objects.requireNonNull(CommandDataHandler.mobEffectRegistry.getKey(effectInstance.getEffect()))) + "_effect");
+                CommandDataHandler.lightCleanup(Objects.requireNonNull(CommandDataHandler.mobEffectRegistry.getKey(effectInstance.getEffect().value()))) + "_effect");
     }
 
     @WrapWithCondition(

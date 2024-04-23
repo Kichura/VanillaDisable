@@ -14,13 +14,13 @@ description = '''${description}'''
 config = "${mod_id}.mixins.json"
 [[mixins]]
 config = "${mod_id}.neoforge.mixins.json"
-[[dependencies.${ mod_id }]]
+[[dependencies.vanilla_disable]]
 modId = "neoforge"
 type = "required"
 versionRange = "${neoforge_loader_version_range}"
 ordering = "NONE" # The order that this dependency should load in relation to your mod, required to be either 'BEFORE' or 'AFTER' if the dependency is not mandatory
 side = "BOTH" # Side this dependency is applied on - 'BOTH', 'CLIENT' or 'SERVER'
-[[dependencies.${ mod_id }]]
+[[dependencies.vanilla_disable]]
 modId = "minecraft"
 type = "required"
 versionRange = "${minecraft_version_range}"

@@ -6,13 +6,21 @@
 
 package uk.debb.vanilla_disable.config.global;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.client.ConfigScreenHandler.ConfigScreenFactory;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import org.jetbrains.annotations.NotNull;
 
 @Mod("vanilla_disable")
 public class ModMenuConfigScreenFactory {
     public ModMenuConfigScreenFactory() {
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenFactory.class, () -> new ConfigScreenFactory((minecraft, screen) -> new VanillaDisableConfigScreen(screen)));
+        ModLoadingContext.get().registerExtensionPoint(IConfigScreenFactory.class, () -> new IConfigScreenFactory() {
+            @Override
+            public @NotNull Screen createScreen(@NotNull Minecraft minecraft, @NotNull Screen screen) {
+                return new VanillaDisableConfigScreen(screen);
+            }
+        });
     }
 }

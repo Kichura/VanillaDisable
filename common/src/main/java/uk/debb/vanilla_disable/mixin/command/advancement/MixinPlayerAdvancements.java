@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.PlayerAdvancements;
+import net.minecraft.server.commands.AdvancementCommands;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,7 +23,9 @@ public abstract class MixinPlayerAdvancements {
     private void vanillaDisable$award(AdvancementHolder advancementHolder, String string, CallbackInfoReturnable<Boolean> cir) {
         String adv = advancementHolder.id().toString();
         if (!adv.contains("recipe") && !CommandDataHandler.getCachedBoolean("advancements", adv, "enabled")) {
-            CommandDataHandler.server.getPlayerList().broadcastSystemMessage(Component.translatable("vd.advancements.disabled.by.vd").withStyle(ChatFormatting.RED), false);
+            if (Thread.currentThread().getStackTrace()[5].getClassName().equals(AdvancementCommands.class.getName())) {
+                CommandDataHandler.server.getPlayerList().broadcastSystemMessage(Component.translatable("vd.advancements.disabled.by.vd").withStyle(ChatFormatting.RED), false);
+            }
             cir.setReturnValue(false);
         }
     }

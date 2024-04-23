@@ -22,3 +22,4 @@ mutable field net/minecraft/client/Options keyMappings [Lnet/minecraft/client/Ke
 accessible field net/minecraft/client/KeyMapping CATEGORY_SORT_ORDER Ljava/util/Map;
 accessible class net/minecraft/client/gui/screens/worldselection/CreateWorldScreen$MoreTab
 accessible field net/minecraft/client/gui/components/Checkbox selected Z
+accessible field net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase pushReaction Lnet/minecraft/world/level/material/PushReaction;

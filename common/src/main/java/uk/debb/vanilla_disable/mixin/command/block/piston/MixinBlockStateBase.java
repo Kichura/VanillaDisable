@@ -33,6 +33,7 @@ public abstract class MixinBlockStateBase {
         }
         String name = CommandDataHandler.getKeyFromBlockRegistry(block);
         String reaction = CommandDataHandler.getCachedString("blocks", name, "push_behaviour");
+        if (reaction == null) return block.defaultBlockState().pushReaction;
         return PushReaction.valueOf(reaction);
     }
 }

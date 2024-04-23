@@ -19,7 +19,7 @@ import uk.debb.vanilla_disable.data.command.CommandDataHandler;
 
 @Mixin(PlayerAdvancements.class)
 public abstract class MixinPlayerAdvancements {
-    @Inject(method = "award", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "award", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$award(AdvancementHolder advancementHolder, String string, CallbackInfoReturnable<Boolean> cir) {
         String adv = advancementHolder.id().toString();
         if (!adv.contains("recipe") && !CommandDataHandler.getCachedBoolean("advancements", adv, "enabled")) {

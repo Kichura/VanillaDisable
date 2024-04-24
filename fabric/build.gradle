@@ -19,7 +19,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${project.fabric_loader_version}")
     include(implementation("com.h2database:h2:${project.h2_version}"))
     modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     implementation project(":common")
 }
 loom {

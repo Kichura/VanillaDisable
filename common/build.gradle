@@ -1,22 +1,29 @@
 plugins {
     id 'idea'
     id 'java'
-    id 'org.spongepowered.gradle.vanilla' version '0.2.+'
+    id 'fabric-loom' version '1.6.+'
 }
 base {
     archivesName = "${mod_name}-common-${minecraft_version}"
-}
-minecraft {
-    version(minecraft_version)
-    accessWideners(file("src/main/resources/${mod_id}.aw"))
 }
 repositories {
     maven { url "https://jitpack.io" }
 }
 dependencies {
-    compileOnly group: 'org.spongepowered', name: 'mixin', version: '0.8.5'
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-    implementation("com.h2database:h2:${project.h2_version}")
-    implementation("org.ow2.asm:asm-tree:${project.asm_version}")
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}"))
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered {
+        it.officialMojangMappings()
+        it.parchment("org.parchmentmc.data:parchment-${project.parchment_mc_version}:${project.parchment_version}@zip")
+    }
+    compileOnly("net.fabricmc:fabric-loader:${project.fabric_loader_version}")
+    compileOnly("net.fabricmc:sponge-mixin:${project.fabric_mixin_version}")
+    compileOnly("com.h2database:h2:${project.h2_version}")
+    compileOnly("org.ow2.asm:asm-tree:${project.asm_version}")
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}"))
+}
+loom {
+    mixin {
+        defaultRefmapName = "vanilla_disable.refmap.json"
+    }
+    accessWidenerPath = file("src/main/resources/${mod_id}.aw")
 }

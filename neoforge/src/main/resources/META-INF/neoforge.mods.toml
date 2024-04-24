@@ -4,12 +4,12 @@ license = "${license}"
 issueTrackerURL = "https://github.com/DragonEggBedrockBreaking/VanillaDisable/issues"
 [[mods]]
 modId = "${mod_id}"
-version = "${version}"
+version = "${mod_version}"
 displayName = "${mod_name}"
 logoFile = "assets/vanilla_disable/icon.png"
 credits = "${credits}"
 authors = "${mod_author}"
-description = '''${description}'''
+description = '''${mod_description}'''
 [[mixins]]
 config = "${mod_id}.mixins.json"
 [[mixins]]

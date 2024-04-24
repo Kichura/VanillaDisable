@@ -27,6 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -51,8 +52,6 @@ import uk.debb.vanilla_disable.data.gamerule.GameruleMigrationDataHandler;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.*;
@@ -290,7 +289,10 @@ public class CommandDataHandler {
 
         entityTypeRegistry.forEach((entityType) ->
                 entities.put(Objects.requireNonNull(entityTypeRegistry.getKey(entityType)).toString(), new Object2ObjectOpenHashMap<>() {{
-                    Entity entity = entityType.create(server.overworld());
+                    Entity entity = null;
+                    if (!entityType.equals(EntityType.ENDER_DRAGON)) {
+                         entity = entityType.create(server.overworld());
+                    }
 
                     put("can_player_interact", "true");
 
@@ -318,7 +320,7 @@ public class CommandDataHandler {
                         put("explosion_knockback", "true");
                     }
 
-                    if (entity instanceof LivingEntity || entityType.equals(EntityType.PLAYER)) {
+                    if (entity instanceof LivingEntity || entityType.equals(EntityType.PLAYER) || entityType.equals(EntityType.ENDER_DRAGON)) {
                         entityTypeRegistry.keySet().forEach(entityType ->
                                 put(lightCleanup(entityType) + "_knockback", "true"));
 
@@ -369,29 +371,11 @@ public class CommandDataHandler {
                     if (VanillaHusbandryAdvancements.BREEDABLE_ANIMALS.contains(entityType) ||
                             VanillaHusbandryAdvancements.INDIRECTLY_BREEDABLE_ANIMALS.contains(entityType)) {
                         put("can_breed", "true");
-                        if (entity != null) {
-                            Class<?> animalClass = entity.getClass();
-                            Method isFood;
-                            try {
-                                isFood = animalClass.getMethod("method_6481", ItemStack.class);
-                            } catch (NoSuchMethodException ignored) {
-                                try {
-                                    isFood = animalClass.getMethod("isFood", ItemStack.class);
-                                } catch (NoSuchMethodException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                            Method finalIsFood = isFood;
-                            itemRegistry.stream().forEach(item -> {
-                                try {
-                                    boolean itemIsFood = (boolean) finalIsFood.invoke(entity, new ItemStack(item));
+                        if (entity instanceof Animal animal) {
+                            itemRegistry.stream().forEach(item ->
                                     put("can_breed_with_" +
-                                                    lightCleanup(Objects.requireNonNull(itemRegistry.getKey(item)).toString()),
-                                            String.valueOf(itemIsFood));
-                                } catch (InvocationTargetException | IllegalAccessException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            });
+                                            lightCleanup(Objects.requireNonNull(itemRegistry.getKey(item)).toString()),
+                                            String.valueOf(animal.isFood(item.getDefaultInstance()))));
                         }
                     }
 

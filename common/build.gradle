@@ -8,6 +8,7 @@ base {
 }
 repositories {
     maven { url "https://jitpack.io" }
+    maven { url "https://maven.parchmentmc.org/" }
 }
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"

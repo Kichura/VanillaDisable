@@ -291,7 +291,7 @@ public class CommandDataHandler {
                 entities.put(Objects.requireNonNull(entityTypeRegistry.getKey(entityType)).toString(), new Object2ObjectOpenHashMap<>() {{
                     Entity entity = null;
                     if (!entityType.equals(EntityType.ENDER_DRAGON)) {
-                         entity = entityType.create(server.overworld());
+                        entity = entityType.create(server.overworld());
                     }
 
                     put("can_player_interact", "true");
@@ -374,7 +374,7 @@ public class CommandDataHandler {
                         if (entity instanceof Animal animal) {
                             itemRegistry.stream().forEach(item ->
                                     put("can_breed_with_" +
-                                            lightCleanup(Objects.requireNonNull(itemRegistry.getKey(item)).toString()),
+                                                    lightCleanup(Objects.requireNonNull(itemRegistry.getKey(item)).toString()),
                                             String.valueOf(animal.isFood(item.getDefaultInstance()))));
                         }
                     }

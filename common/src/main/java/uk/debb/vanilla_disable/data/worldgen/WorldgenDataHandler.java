@@ -33,17 +33,17 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class WorldgenDataHandler {
+    public static final Object2BooleanMap<String> biomeMap = new Object2BooleanOpenHashMap<>();
+    public static final Object2BooleanMap<String> structureMap = new Object2BooleanOpenHashMap<>();
+    public static final Object2BooleanMap<String> placedFeatureMap = new Object2BooleanOpenHashMap<>();
+    public static final Properties properties = new Properties();
     public static MinecraftServer server;
     public static Registry<Biome> biomeRegistry;
     public static Registry<Structure> structureRegistry;
     public static Registry<PlacedFeature> placedFeatureRegistry;
-    public static final Object2BooleanMap<String> biomeMap = new Object2BooleanOpenHashMap<>();
-    public static final Object2BooleanMap<String> structureMap = new Object2BooleanOpenHashMap<>();
-    public static final Object2BooleanMap<String> placedFeatureMap = new Object2BooleanOpenHashMap<>();
     public static File directory;
     public static File tomlFile;
     public static File propertiesFile;
-    public static final Properties properties = new Properties();
     public static boolean shouldMigrate = true;
     public static boolean updated = false;
 

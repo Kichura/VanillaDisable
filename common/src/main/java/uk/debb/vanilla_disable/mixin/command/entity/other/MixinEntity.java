@@ -24,11 +24,11 @@ import uk.debb.vanilla_disable.data.command.CommandDataHandler;
 public abstract class MixinEntity {
     @Shadow
     private BlockPos blockPosition;
+    @Shadow
+    private Level level;
 
     @Shadow
     public abstract boolean hurt(DamageSource source, float amount);
-
-    @Shadow private Level level;
 
     @SuppressWarnings("deprecation")
     @Inject(method = "onInsideBlock", at = @At("HEAD"))

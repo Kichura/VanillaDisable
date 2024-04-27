@@ -16,7 +16,7 @@ dependencies {
         it.officialMojangMappings()
         it.parchment("org.parchmentmc.data:parchment-${project.parchment_mc_version}:${project.parchment_version}@zip")
     }
-    compileOnly("net.fabricmc:fabric-loader:${project.fabric_loader_version}")
+    modImplementation("net.fabricmc:fabric-loader:${project.fabric_loader_version}")
     compileOnly("net.fabricmc:sponge-mixin:${project.fabric_mixin_version}")
     compileOnly("com.h2database:h2:${project.h2_version}")
     compileOnly("org.ow2.asm:asm-tree:${project.asm_version}")

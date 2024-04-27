@@ -52,9 +52,9 @@ tasks.withType(JavaCompile).matching(notNeoTask).configureEach {
 tasks.withType(ProcessResources).matching(notNeoTask).configureEach {
     from project(":common").sourceSets.main.resources
 }
-subsystems {
-    parchment {
-        minecraftVersion = parchment_mc_version
-        mappingsVersion = parchment_version
-    }
-}
+//subsystems {
+//    parchment {
+//        minecraftVersion = parchment_mc_version
+//        mappingsVersion = parchment_version
+//    }
+//}

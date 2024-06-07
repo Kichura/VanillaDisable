@@ -25,6 +25,10 @@ tasks.forEach {
     it.group = null
 }
 
+repositories {
+    maven { url = uri("https://maven.parchmentmc.org/") }
+}
+
 dependencies {
     minecraft(group = "com.mojang", name = "minecraft", version = MINECRAFT_VERSION)
     @Suppress("UnstableApiUsage")

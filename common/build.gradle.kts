@@ -36,7 +36,7 @@ dependencies {
         officialMojangMappings()
         parchment("org.parchmentmc.data:parchment-${PARCHMENT_MC_VERSION}:${PARCHMENT_VERSION}@zip")
     })
-//    modImplementation("net.fabricmc:fabric-loader:${FABRIC_LOADER_VERSION}")
+    modImplementation("net.fabricmc:fabric-loader:${FABRIC_LOADER_VERSION}")
     compileOnly("io.github.llamalad7:mixinextras-common:${MIXIN_EXTRAS_VERSION}")
     annotationProcessor("io.github.llamalad7:mixinextras-common:${MIXIN_EXTRAS_VERSION}")
     compileOnly("net.fabricmc:sponge-mixin:${FABRIC_MIXIN_VERSION}")

@@ -60,4 +60,7 @@ tasks {
     jar {
         from(rootDir.resolve("LICENSE"))
     }
+    register("prepareWorkspace") {
+        dependsOn("genSourcesWithVineflower")
+    }
 }

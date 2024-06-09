@@ -1,0 +1,21 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+package uk.debb.vanilla_disable.mixin.feature.block.other;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import net.minecraft.world.entity.Entity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import uk.debb.vanilla_disable.config.data.DataHandler;
+
+@Mixin(Entity.class)
+public abstract class MixinEntity {
+    @ModifyReturnValue(method = "getDimensionChangingDelay", at = @At("RETURN"))
+    private int vanillaDisable$getDimensionChangingDelay(int original) {
+        return DataHandler.getCachedInt("blocks", "minecraft:nether_portal", "cooldown");
+    }
+}

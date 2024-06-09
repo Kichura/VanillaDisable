@@ -6,8 +6,7 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "command.block.placement.MixinBucketItem",
-    "util.gamerule.MixinEditGameRulesScreenRuleList"
+    "command.block.placement.MixinBucketItem"
   ],
   "injectors": {
     "defaultRequire": 1

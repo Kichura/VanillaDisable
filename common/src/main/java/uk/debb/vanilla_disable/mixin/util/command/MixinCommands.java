@@ -116,6 +116,7 @@ public abstract class MixinCommands {
                         .then(vanillaDisable$init$builder("biome", CommandDataHandler.biomes, CommandDataHandler.biomeData, "biomes"))
                         .then(vanillaDisable$init$builder("structure", CommandDataHandler.structures, CommandDataHandler.structureData, "structures"))
                         .then(vanillaDisable$init$builder("placed_feature", CommandDataHandler.placedFeatures, CommandDataHandler.placedFeatureData, "placed_features"))
+                        .then(vanillaDisable$init$builder("misc", CommandDataHandler.misc, CommandDataHandler.miscData, "misc"))
                 ).then(overallResetDBBuilder)
         );
     }

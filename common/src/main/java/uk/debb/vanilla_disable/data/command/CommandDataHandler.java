@@ -76,6 +76,7 @@ public class CommandDataHandler {
     public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> biomes = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> structures = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> placedFeatures = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> misc = new Object2ObjectOpenHashMap<>();
 
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> entityData = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> blockData = new Object2ObjectOpenHashMap<>();
@@ -87,6 +88,7 @@ public class CommandDataHandler {
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> biomeData = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> structureData = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> placedFeatureData = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> miscData = new Object2ObjectOpenHashMap<>();
 
     public static final Object2IntMap<String> intRowMaximums = new Object2IntArrayMap<>();
     public static final Object2DoubleMap<String> doubleRowMaximums = new Object2DoubleArrayMap<>();
@@ -123,6 +125,7 @@ public class CommandDataHandler {
     public static File tomlFile;
     public static File propertiesFile;
     public static final Properties properties = new Properties();
+    public static final Object2ObjectMap<String, ObjectList<String>> legacyGameruleMap = new Object2ObjectOpenHashMap<>();
 
     /**
      * Cleans up data for display (removes underscores, 'namespace:' prefixes, 'group/' prefixes)
@@ -316,6 +319,10 @@ public class CommandDataHandler {
         }});
         cols.put("placed_features", new Object2ObjectOpenHashMap<>() {{
             put("enabled", BOOLEAN);
+        }});
+        cols.put("misc", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", BOOLEAN);
+            put("raid_waves", INTEGER);
         }});
 
         entityTypeRegistry.forEach((entityType) ->
@@ -677,6 +684,18 @@ public class CommandDataHandler {
         placedFeatures.put("minecraft_unofficial:end_spike_cage", new Object2ObjectOpenHashMap<>() {{
             put("enabled", "true");
         }});
+        misc.put("raid_waves_easy", new Object2ObjectOpenHashMap<>() {{
+            put("raid_waves", "4");
+        }});
+        misc.put("raid_waves_normal", new Object2ObjectOpenHashMap<>() {{
+            put("raid_waves", "6");
+        }});
+        misc.put("raid_waves_hard", new Object2ObjectOpenHashMap<>() {{
+            put("raid_waves", "8");
+        }});
+        misc.put("recipe_book", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", "true");
+        }});
 
         entityData.put("stats", new Object2ObjectOpenHashMap<>() {{
             statTypeRegistry.forEach(statType -> {
@@ -844,6 +863,10 @@ public class CommandDataHandler {
             put("enabled", Component.translatable("vd.commandRule.placedFeatures.enabled"));
         }});
 
+        miscData.put("other", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", Component.translatable("vd.commandRule.misc.enabled", "recipe_book"));
+            put("raid_waves", Component.translatable("vd.commandRule.misc.raid_waves"));
+        }});
 
         intRowMaximums.put("nutrition", 20);
         doubleRowMaximums.put("saturation", 9.9);
@@ -904,7 +927,7 @@ public class CommandDataHandler {
      */
     private static void generateData(boolean create, String tables) {
         if (create) {
-            ObjectList.of("entities", "blocks", "items", "enchantments", "commands", "advancements", "mob_categories", "biomes", "structures", "placed_features").forEach(table -> {
+            ObjectList.of("entities", "blocks", "items", "enchantments", "commands", "advancements", "mob_categories", "biomes", "structures", "placed_features", "misc").forEach(table -> {
                 try {
                     statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + "(id CLOB NOT NULL, " +
                             cols.get(table).entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
@@ -926,6 +949,7 @@ public class CommandDataHandler {
             put("biomes", biomes);
             put("structures", structures);
             put("placed_features", placedFeatures);
+            put("misc", misc);
         }}.forEach((table, data) -> {
             if (tables.equals("*") || tables.equals(table)) {
                 data.forEach((key, value) -> {
@@ -985,14 +1009,12 @@ public class CommandDataHandler {
 
             Scanner scanner = new Scanner(new File(PATH));
             while (scanner.hasNext()) {
-                try {
-                    statement.execute(scanner.nextLine());
-                } catch (SQLException ignored) {
-                }
+                statement.execute(scanner.nextLine());
             }
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
+        legacyGameruleMap.forEach((rule, values) -> setValue("misc", rule, values.getFirst(), values.get(1), false));
     }
 
     /**

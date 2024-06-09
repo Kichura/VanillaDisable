@@ -109,6 +109,8 @@
     "command.item.potion.MixinThrownPotion",
     "command.item.spam.MixinBowItem",
     "command.item.spam.MixinCrossbowItem",
+    "command.misc.MixinRaid",
+    "command.misc.MixinServerRecipeBook",
     "command.mob_category.MixinMobCategory",
     "command.worldgen.biome.MixinBiomeManager",
     "command.worldgen.biome.MixinBiomeSource",
@@ -119,16 +121,12 @@
     "command.worldgen.feature.MixinEndSpike",
     "command.worldgen.structure.MixinStructureCheck",
     "command.worldgen.structure.MixinStructureManager",
-    "gamerule.MixinRaid",
-    "gamerule.MixinServerRecipeBook",
     "util.command.MixinCommands",
     "util.command.MixinCreateWorldScreenMoreTab",
+    "util.command.MixinGameRules",
     "util.command.MixinKeyboardHandler",
     "util.command.MixinMinecraft",
-    "util.command.MixinMinecraftServer",
-    "util.gamerule.MixinBootstrap",
-    "util.gamerule.MixinGameRulesCategory",
-    "util.gamerule.MixinMinecraftServer"
+    "util.command.MixinMinecraftServer"
   ],
   "client": [
     "util.command.MixinCreateWorldScreen"

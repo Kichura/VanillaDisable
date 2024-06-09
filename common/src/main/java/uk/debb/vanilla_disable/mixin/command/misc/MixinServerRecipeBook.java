@@ -4,29 +4,29 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package uk.debb.vanilla_disable.mixin.gamerule;
+package uk.debb.vanilla_disable.mixin.command.misc;
 
 import net.minecraft.stats.ServerRecipeBook;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.data.gamerule.VDGamerules;
+import uk.debb.vanilla_disable.data.command.CommandDataHandler;
 
 @Mixin(ServerRecipeBook.class)
 public class MixinServerRecipeBook {
     @Inject(method = "loadRecipes", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$loadRecipes(CallbackInfo ci) {
-        if (VDGamerules.server == null) return;
-        if (!VDGamerules.server.getGameRules().getBoolean(VDGamerules.RECIPE_BOOK_ENABLED)) {
+        if (CommandDataHandler.server == null) return;
+        if (!CommandDataHandler.getCachedBoolean("misc", "recipe_book", "enabled")) {
             ci.cancel();
         }
     }
 
     @Inject(method = "sendRecipes", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$sendRecipes(CallbackInfo ci) {
-        if (VDGamerules.server == null) return;
-        if (!VDGamerules.server.getGameRules().getBoolean(VDGamerules.RECIPE_BOOK_ENABLED)) {
+        if (CommandDataHandler.server == null) return;
+        if (!CommandDataHandler.getCachedBoolean("misc", "recipe_book", "enabled")) {
             ci.cancel();
         }
     }

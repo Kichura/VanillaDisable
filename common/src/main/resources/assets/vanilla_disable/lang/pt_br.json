@@ -1,12 +1,4 @@
 {
-  "gamerule.raidWavesEasy": "Hordas de Invasões na dificuldade facil",
-  "gamerule.raidWavesNormal": "Hordas de Invasões na dificuldade media",
-  "gamerule.raidWavesHard": "Hordas de Invasões na dificuldade dificil",
-  "gamerule.recipeBookEnabled": "Ativar / Desativar livro de receitas",
-  "gamerule.raidWavesEasy.description": "O numero de hordas que acontecem em uma invasão na dificuldade facil",
-  "gamerule.raidWavesNormal.description": "O numero de hordas que acontecem em uma invasão na dificuldade media",
-  "gamerule.raidWavesHard.description": "O numero de hordas que acontecem em uma invasão na dificuldade dificil",
-  "gamerule.recipeBookEnabled.description": "Ativar / Desativar  o livro de receitas",
   "vd.gamerule.category.vanilla_disable": "Vanilla Disable",
   "vd.commandRule.entities.statTypes": "Ativar / Desativar  estatisticas na categoria '%s'",
   "vd.commandRule.entities.customStats": "Ativar / Desativar a estatistica customizada '%s'.",

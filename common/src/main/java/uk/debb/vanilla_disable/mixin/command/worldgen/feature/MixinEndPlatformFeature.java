@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package uk.debb.vanilla_disable.mixin.worldgen.feature;
+package uk.debb.vanilla_disable.mixin.command.worldgen.feature;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.data.worldgen.WorldgenDataHandler;
+import uk.debb.vanilla_disable.data.command.CommandDataHandler;
 
 @Mixin(EndPlatformFeature.class)
 public abstract class MixinEndPlatformFeature {
     @Inject(method = "createEndPlatform", at = @At("HEAD"), cancellable = true)
     private static void vanillaDisable$createEndPlatform(ServerLevelAccessor serverLevelAccessor, BlockPos blockPos, boolean bl, CallbackInfo ci) {
-        if (!WorldgenDataHandler.get("placed_features", "minecraft:end_platform")) {
+        if (!CommandDataHandler.getCachedBoolean("placed_features", "minecraft:end_platform", "enabled")) {
             ci.cancel();
         }
     }

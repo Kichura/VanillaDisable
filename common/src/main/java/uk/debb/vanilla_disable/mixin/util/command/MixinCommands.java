@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Mixin(Commands.class)
+@SuppressWarnings("ConstantConditions")
 public abstract class MixinCommands {
     @Shadow
     @Final
@@ -112,6 +113,9 @@ public abstract class MixinCommands {
                         .then(vanillaDisable$init$builder("command", CommandDataHandler.commands, CommandDataHandler.commandData, "commands"))
                         .then(vanillaDisable$init$builder("advancement", CommandDataHandler.advancements, CommandDataHandler.advancementData, "advancements"))
                         .then(vanillaDisable$init$builder("mob_category", CommandDataHandler.mobCategories, CommandDataHandler.mobCategoryData, "mob_categories"))
+                        .then(vanillaDisable$init$builder("biome", CommandDataHandler.biomes, CommandDataHandler.biomeData, "biomes"))
+                        .then(vanillaDisable$init$builder("structure", CommandDataHandler.structures, CommandDataHandler.structureData, "structures"))
+                        .then(vanillaDisable$init$builder("placed_feature", CommandDataHandler.placedFeatures, CommandDataHandler.placedFeatureData, "placed_features"))
                 ).then(overallResetDBBuilder)
         );
     }

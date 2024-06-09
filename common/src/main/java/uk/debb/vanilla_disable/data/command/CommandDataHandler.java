@@ -17,6 +17,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.advancements.packs.VanillaHusbandryAdvancements;
 import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.StatType;
@@ -40,17 +41,21 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.storage.LevelResource;
 import org.apache.commons.io.FileUtils;
+import uk.debb.vanilla_disable.Constants;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.*;
@@ -68,6 +73,9 @@ public class CommandDataHandler {
     public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> commands = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> advancements = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> mobCategories = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> biomes = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> structures = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, String>> placedFeatures = new Object2ObjectOpenHashMap<>();
 
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> entityData = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> blockData = new Object2ObjectOpenHashMap<>();
@@ -76,6 +84,9 @@ public class CommandDataHandler {
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> commandData = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> advancementData = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> mobCategoryData = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> biomeData = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> structureData = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2ObjectMap<String, Component>> placedFeatureData = new Object2ObjectOpenHashMap<>();
 
     public static final Object2IntMap<String> intRowMaximums = new Object2IntArrayMap<>();
     public static final Object2DoubleMap<String> doubleRowMaximums = new Object2DoubleArrayMap<>();
@@ -93,6 +104,9 @@ public class CommandDataHandler {
     public static Registry<DamageType> damageTypeRegistry;
     public static Registry<MobEffect> mobEffectRegistry;
     public static Registry<StatType<?>> statTypeRegistry;
+    public static Registry<Biome> biomeRegistry;
+    public static Registry<Structure> structureRegistry;
+    public static Registry<PlacedFeature> placedFeatureRegistry;
     private static Connection connection;
     private static Statement statement;
     private static String PATH;
@@ -102,6 +116,13 @@ public class CommandDataHandler {
     private static Registry<EntityType<?>> entityTypeRegistry;
     private static Registry<BlockEntityType<?>> blockEntityRegistry;
     private static Registry<ResourceLocation> customStatRegistry;
+
+    public static final Object2BooleanMap<String> biomeMap = new Object2BooleanOpenHashMap<>();
+    public static final Object2BooleanMap<String> structureMap = new Object2BooleanOpenHashMap<>();
+    public static final Object2BooleanMap<String> placedFeatureMap = new Object2BooleanOpenHashMap<>();
+    public static File tomlFile;
+    public static File propertiesFile;
+    public static final Properties properties = new Properties();
 
     /**
      * Cleans up data for display (removes underscores, 'namespace:' prefixes, 'group/' prefixes)
@@ -152,12 +173,16 @@ public class CommandDataHandler {
         mobEffectRegistry = registryAccess.registryOrThrow(Registries.MOB_EFFECT);
         statTypeRegistry = registryAccess.registryOrThrow(Registries.STAT_TYPE);
         customStatRegistry = registryAccess.registryOrThrow(Registries.CUSTOM_STAT);
+        biomeRegistry = registryAccess.registryOrThrow(Registries.BIOME);
+        structureRegistry = registryAccess.registryOrThrow(Registries.STRUCTURE);
+        placedFeatureRegistry = registryAccess.registryOrThrow(Registries.PLACED_FEATURE);
     }
 
     /**
      * Populates the data maps with the data dynamically pulled from registries, and custom data.
      * This includes names of columns corresponding to data type, default value for each row, and descriptions.
      */
+    @SuppressWarnings("ConstantConditions")
     public static void populate() {
         undeadMobs = ObjectList.of(EntityType.SKELETON_HORSE, EntityType.ZOMBIE_HORSE, EntityType.SKELETON, EntityType.PHANTOM, EntityType.WITHER, EntityType.ZOGLIN, EntityType.ZOMBIE);
 
@@ -282,6 +307,15 @@ public class CommandDataHandler {
         }});
         cols.put("mob_categories", new Object2ObjectOpenHashMap<>() {{
             put("mobcap", INTEGER);
+        }});
+        cols.put("biomes", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", BOOLEAN);
+        }});
+        cols.put("structures", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", BOOLEAN);
+        }});
+        cols.put("placed_features", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", BOOLEAN);
         }});
 
         entityTypeRegistry.forEach((entityType) ->
@@ -628,6 +662,22 @@ public class CommandDataHandler {
                     put("mobcap", String.valueOf(mobCategory.getMaxInstancesPerChunk()));
                 }}));
 
+        biomeRegistry.keySet().forEach(biome -> {
+            if ("minecraft:plains minecraft:nether minecraft:the_end".contains(biome.toString())) return;
+            biomes.put(biome.toString(), new Object2ObjectOpenHashMap<>() {{
+                put("enabled", "true");
+            }});
+        });
+        structureRegistry.keySet().forEach(structure -> structures.put(structure.toString(), new Object2ObjectOpenHashMap<>() {{
+            put("enabled", "true");
+        }}));
+        placedFeatureRegistry.keySet().forEach(placedFeature -> placedFeatures.put(placedFeature.toString(), new Object2ObjectOpenHashMap<>() {{
+            put("enabled", "true");
+        }}));
+        placedFeatures.put("minecraft_unofficial:end_spike_cage", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", "true");
+        }});
+
         entityData.put("stats", new Object2ObjectOpenHashMap<>() {{
             statTypeRegistry.forEach(statType -> {
                 if (statType.equals(Stats.CUSTOM)) return;
@@ -782,6 +832,19 @@ public class CommandDataHandler {
             put("mobcap", Component.translatable("vd.commandRule.mobCategory.mobcap"));
         }});
 
+        biomeData.put("other", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", Component.translatable("vd.commandRule.biomes.enabled"));
+        }});
+
+        structureData.put("other", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", Component.translatable("vd.commandRule.structures.enabled"));
+        }});
+
+        placedFeatureData.put("other", new Object2ObjectOpenHashMap<>() {{
+            put("enabled", Component.translatable("vd.commandRule.placedFeatures.enabled"));
+        }});
+
+
         intRowMaximums.put("nutrition", 20);
         doubleRowMaximums.put("saturation", 9.9);
         stringColSuggestions.put("push_behaviour", Arrays.stream(PushReaction.values()).map(Enum::name).toList());
@@ -840,104 +903,40 @@ public class CommandDataHandler {
      * @param tables The tables to generate data for.
      */
     private static void generateData(boolean create, String tables) {
-        try {
-            if (create) {
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS entities(id CLOB NOT NULL, " +
-                        cols.get("entities").entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
-                                .collect(Collectors.joining(", ")) + ");");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS blocks(id CLOB NOT NULL, " +
-                        cols.get("blocks").entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
-                                .collect(Collectors.joining(", ")) + ");");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS items(id CLOB NOT NULL, " +
-                        cols.get("items").entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
-                                .collect(Collectors.joining(", ")) + ");");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS enchantments(id CLOB NOT NULL, " +
-                        cols.get("enchantments").entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
-                                .collect(Collectors.joining(", ")) + ");");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS commands(id CLOB NOT NULL, " +
-                        cols.get("commands").entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
-                                .collect(Collectors.joining(", ")) + ");");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS advancements(id CLOB NOT NULL, " +
-                        cols.get("advancements").entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
-                                .collect(Collectors.joining(", ")) + ");");
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS mob_categories(id CLOB NOT NULL, " +
-                        cols.get("mob_categories").entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
-                                .collect(Collectors.joining(", ")) + ");");
-            }
-
-            if (tables.equals("*") || tables.equals("entities")) {
-                entities.forEach((key, value) -> {
-                    try {
-                        statement.executeUpdate("INSERT INTO entities (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            if (tables.equals("*") || tables.equals("blocks")) {
-                blocks.forEach((key, value) -> {
-                    try {
-                        statement.executeUpdate("INSERT INTO blocks (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            if (tables.equals("*") || tables.equals("items")) {
-                items.forEach((key, value) -> {
-                    try {
-                        statement.executeUpdate("INSERT INTO items (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            if (tables.equals("*") || tables.equals("enchantments")) {
-                enchantments.forEach((key, value) -> {
-                    try {
-                        statement.executeUpdate("INSERT INTO enchantments (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            if (tables.equals("*") || tables.equals("commands")) {
-                commands.forEach((key, value) -> {
-                    try {
-                        statement.executeUpdate("INSERT INTO commands (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            if (tables.equals("*") || tables.equals("advancements")) {
-                advancements.forEach((key, value) -> {
-                    try {
-                        statement.executeUpdate("INSERT INTO advancements (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            if (tables.equals("*") || tables.equals("mob_categories")) {
-                mobCategories.forEach((key, value) -> {
-                    try {
-                        statement.executeUpdate("INSERT INTO mob_categories (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (create) {
+            ObjectList.of("entities", "blocks", "items", "enchantments", "commands", "advancements", "mob_categories", "biomes", "structures", "placed_features").forEach(table -> {
+                try {
+                    statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + "(id CLOB NOT NULL, " +
+                            cols.get(table).entrySet().stream().map(entry -> "\"" + entry.getKey() + "\" " + entry.getValue())
+                                    .collect(Collectors.joining(", ")) + ");");
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
+
+        new Object2ObjectOpenHashMap<String, Object2ObjectMap<String, Object2ObjectMap<String, String>>>() {{
+            put("entities", entities);
+            put("blocks", blocks);
+            put("items", items);
+            put("enchantments", enchantments);
+            put("commands", commands);
+            put("advancements", advancements);
+            put("mob_categories", mobCategories);
+            put("biomes", biomes);
+            put("structures", structures);
+            put("placed_features", placedFeatures);
+        }}.forEach((table, data) -> {
+            if (tables.equals("*") || tables.equals(table)) {
+                data.forEach((key, value) -> {
+                    try {
+                        statement.executeUpdate("INSERT INTO " + table + " (id, \"" + String.join("\", \"", value.keySet()) + "\") VALUES ('" + key + "', " + String.join(", ", value.values()) + ");");
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -952,23 +951,117 @@ public class CommandDataHandler {
 
             generateData(true, "*");
 
-            if (new File(PATH).exists()) {
-                Scanner scanner = new Scanner(new File(PATH));
-                while (scanner.hasNext()) {
-                    try {
-                        statement.execute(scanner.nextLine());
-                    } catch (SQLException ignored) {
-                    }
+            if (!new File(PATH).exists()) {
+                if (!new File(PATH).createNewFile()) {
+                    throw new RuntimeException("Could not create file " + PATH);
                 }
-            } else {
-                if (!new File(PATH).exists()) {
-                    if (!new File(PATH).createNewFile()) {
-                        throw new RuntimeException("Could not create file " + PATH);
-                    }
+            }
+
+            File directory = server.getWorldPath(LevelResource.ROOT).toFile();
+            tomlFile = new File(directory, "vanilla_disable_worldgen.toml");
+            propertiesFile = new File(directory, "vanilla_disable_worldgen.properties");
+            if (tomlFile.exists()) {
+                convertToml();
+            } else if (propertiesFile.exists()) {
+                convertProperties();
+            }
+
+            new Object2ObjectOpenHashMap<String, Object2BooleanMap<String>>() {{
+                put("biomes", biomeMap);
+                put("structures", structureMap);
+                put("placed_features", placedFeatureMap);
+            }}.forEach((table, map) -> {
+                if (map.values().stream().noneMatch(val -> val)) {
+                    writeToFile("UPDATE " + table + " SET \"enabled\" = false;");
+                } else {
+                    map.forEach((key, value) ->
+                            writeToFile("UPDATE " + table + " SET \"enabled\" = " + value + " WHERE id = '" + key + "';"));
+                }
+            });
+
+            biomeMap.clear();
+            structureMap.clear();
+            placedFeatureMap.clear();
+
+            Scanner scanner = new Scanner(new File(PATH));
+            while (scanner.hasNext()) {
+                try {
+                    statement.execute(scanner.nextLine());
+                } catch (SQLException ignored) {
                 }
             }
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Converts ancient worldgen toml format to legacy properties
+     */
+    public static void convertToml() {
+        if (!tomlFile.renameTo(propertiesFile)) {
+            Constants.LOG.error("Unable to convert legacy .toml worldgen config to .properties format.");
+            return;
+        }
+
+        try {
+            String[] lines = FileUtils.readFileToString(propertiesFile, Charset.defaultCharset()).split("\n");
+            Object2ObjectMap<String, StringBuilder> sections = new Object2ObjectOpenHashMap<>();
+
+            String current = "";
+            for (String line : lines) {
+                if (line.startsWith("[")) {
+                    current = line.substring(1, line.length() - 1);
+                    sections.put(current, new StringBuilder());
+                } else {
+                    sections.get(current).append(line.replace("  ", current + ".")).append("\n");
+                }
+            }
+
+            try (FileWriter writer = new FileWriter(propertiesFile)) {
+                sections.values().forEach(content -> {
+                    try {
+                        writer.write(content.toString());
+                    } catch (IOException ex) {
+                        throw new UncheckedIOException(ex);
+                    }
+                });
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
+        } catch (IOException e) {
+            Constants.LOG.error("Unable to convert legacy .toml worldgen config to .properties format.");
+        }
+    }
+
+    /**
+     * Converts legacy properties worldgen format to sql format
+     */
+    public static void convertProperties() {
+        try (FileInputStream in = new FileInputStream(propertiesFile)) {
+            properties.load(in);
+        } catch (IOException e) {
+            Constants.LOG.error("Unable to load worldgen config.", e);
+        }
+
+        properties.forEach((key, value) -> {
+            if (value == "false") {
+                if (key.toString().startsWith("biomes.")) {
+                    if (key.toString().contains("end_spike_cage")) {
+                        writeToFile("UPDATE placed_features SET \"enabled\" = false WHERE id = 'minecraft_unofficial:end_spike_cage';");
+                    } else {
+                        writeToFile("UPDATE biomes SET \"enabled\" = false WHERE id = 'minecraft:" + key.toString().substring(7) + "';");
+                    }
+                } else if (key.toString().startsWith("structures.")) {
+                    writeToFile("UPDATE structures SET \"enabled\" = false WHERE id = 'minecraft:" + key.toString().substring(11) + "';");
+                } else if (key.toString().startsWith("placed_features.")) {
+                    writeToFile("UPDATE placed_features SET \"enabled\" = false WHERE id = 'minecraft:" + key.toString().substring(16) + "';");
+                }
+            }
+        });
+
+        if (!propertiesFile.delete()) {
+            Constants.LOG.error("Unable to delete legacy .properties worldgen config.");
         }
     }
 
@@ -1119,7 +1212,6 @@ public class CommandDataHandler {
             return bool;
         } catch (SQLException | NullPointerException ignored) {
         }
-        memo.clear();
         return Boolean.parseBoolean(getDefault(table, row, column));
     }
 
@@ -1133,8 +1225,8 @@ public class CommandDataHandler {
      */
     public static boolean getCachedBoolean(String table, String row, String column) {
         String cacheKey = "getCachedBoolean-" + table + "-" + row + "-" + column;
-        if (memo.containsKey(cacheKey)) {
-            return (boolean) memo.get(cacheKey);
+        if (memo.get(cacheKey) instanceof Boolean bool) {
+            return bool;
         }
         boolean bool = getBoolean(table, row, column);
         memo.put(cacheKey, bool);
@@ -1158,7 +1250,6 @@ public class CommandDataHandler {
             return integer;
         } catch (SQLException | NullPointerException ignored) {
         }
-        memo.clear();
         return Integer.parseInt(getDefault(table, row, column));
     }
 
@@ -1172,8 +1263,8 @@ public class CommandDataHandler {
      */
     public static int getCachedInt(String table, String row, String column) {
         String cacheKey = "getCachedInt-" + table + "-" + row + "-" + column;
-        if (memo.containsKey(cacheKey)) {
-            return (int) memo.get(cacheKey);
+        if (memo.get(cacheKey) instanceof Integer integer) {
+            return integer;
         }
         int integer = getInt(table, row, column);
         memo.put(cacheKey, integer);
@@ -1197,7 +1288,6 @@ public class CommandDataHandler {
             return dbl;
         } catch (SQLException | NullPointerException ignored) {
         }
-        memo.clear();
         return Double.parseDouble(getDefault(table, row, column));
     }
 
@@ -1211,8 +1301,8 @@ public class CommandDataHandler {
      */
     public static double getCachedDouble(String table, String row, String column) {
         String cacheKey = "getCachedDouble-" + table + "-" + row + "-" + column;
-        if (memo.containsKey(cacheKey)) {
-            return (double) memo.get(cacheKey);
+        if (memo.get(cacheKey) instanceof Double real) {
+            return real;
         }
         double real = getDouble(table, row, column);
         memo.put(cacheKey, real);
@@ -1237,7 +1327,6 @@ public class CommandDataHandler {
             return str;
         } catch (SQLException | NullPointerException ignored) {
         }
-        memo.clear();
         return getDefault(table, row, column);
     }
 
@@ -1251,8 +1340,8 @@ public class CommandDataHandler {
      */
     public static String getCachedString(String table, String row, String column) {
         String cacheKey = "getCachedString-" + table + "-" + row + "-" + column;
-        if (memo.containsKey(cacheKey)) {
-            return (String) memo.get(cacheKey);
+        if (memo.get(cacheKey) instanceof String string) {
+            return string;
         }
         String string = getString(table, row, column);
         memo.put(cacheKey, string);
@@ -1303,8 +1392,8 @@ public class CommandDataHandler {
     @SuppressWarnings("unchecked")
     public static List<ItemStack> getCachedBreedingItems(String row) {
         String cacheKey = "getBreedingItems-" + row;
-        if (memo.containsKey(cacheKey)) {
-            return (List<ItemStack>) memo.get(cacheKey);
+        if (memo.get(cacheKey) instanceof List<?> itemStack) {
+            return (List<ItemStack>) itemStack;
         }
         List<ItemStack> itemStack = getBreedingItems(row);
         memo.put(cacheKey, itemStack);
@@ -1398,5 +1487,50 @@ public class CommandDataHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Checks if a biome is in a dimension.
+     *
+     * @param level The dimension.
+     * @param biome The biome.
+     * @return Whether the biome is in the dimension.
+     */
+    private static boolean hasBiome(ResourceKey<Level> level, Holder<Biome> biome) {
+        return Objects.requireNonNull(server.getLevel(level)).getChunkSource().getGenerator().getBiomeSource().possibleBiomes.get().contains(biome);
+    }
+
+    /**
+     * Gets the default biome for a dimension, from a biome in that dimension.
+     *
+     * @param biome The biome.
+     * @return The default biome.
+     */
+    public static Holder<Biome> getDefaultBiome(Holder<Biome> biome) {
+        if (hasBiome(Level.NETHER, biome)) {
+            return biomeRegistry.getHolderOrThrow(Biomes.NETHER_WASTES);
+        } else if (hasBiome(Level.END, biome)) {
+            return biomeRegistry.getHolderOrThrow(Biomes.THE_END);
+        }
+        return biomeRegistry.getHolderOrThrow(Biomes.PLAINS);
+    }
+
+    /**
+     * Figures out which value to return - reused in multiple places.
+     *
+     * @param original the biome
+     * @return the new biome
+     */
+    public static Holder<Biome> getBiome(Holder<Biome> original) {
+        if (biomeRegistry == null || server == null) return original;
+        ResourceLocation resourceLocation = biomeRegistry.getKey(original.value());
+        if (resourceLocation == null) return original;
+        if (!biomeMap.isEmpty() && !biomeMap.getOrDefault(resourceLocation.toString(), true)) {
+            return getDefaultBiome(original);
+        }
+        if (populationDone && !getCachedBoolean("biomes", resourceLocation.toString(), "enabled")) {
+            return getDefaultBiome(original);
+        }
+        return original;
     }
 }

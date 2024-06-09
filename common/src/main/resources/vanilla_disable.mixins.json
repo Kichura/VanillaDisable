@@ -110,27 +110,28 @@
     "command.item.spam.MixinBowItem",
     "command.item.spam.MixinCrossbowItem",
     "command.mob_category.MixinMobCategory",
+    "command.worldgen.biome.MixinBiomeManager",
+    "command.worldgen.biome.MixinBiomeSource",
+    "command.worldgen.biome.MixinChunkAccess",
+    "command.worldgen.biome.MultipleMixinBiomeSource",
+    "command.worldgen.feature.MixinBiomeGenerationSettings",
+    "command.worldgen.feature.MixinEndPlatformFeature",
+    "command.worldgen.feature.MixinEndSpike",
+    "command.worldgen.structure.MixinStructureCheck",
+    "command.worldgen.structure.MixinStructureManager",
     "gamerule.MixinRaid",
     "gamerule.MixinServerRecipeBook",
     "util.command.MixinCommands",
+    "util.command.MixinCreateWorldScreenMoreTab",
     "util.command.MixinKeyboardHandler",
     "util.command.MixinMinecraft",
     "util.command.MixinMinecraftServer",
     "util.gamerule.MixinBootstrap",
     "util.gamerule.MixinGameRulesCategory",
-    "util.gamerule.MixinMinecraftServer",
-    "util.worldgen.MixinCreateWorldScreenMoreTab",
-    "util.worldgen.MixinMinecraftServer",
-    "worldgen.biome.MixinBiomeManager",
-    "worldgen.biome.MixinBiomeSource",
-    "worldgen.feature.MixinBiomeGenerationSettings",
-    "worldgen.feature.MixinEndPlatformFeature",
-    "worldgen.feature.MixinEndSpike",
-    "worldgen.structure.MixinStructureCheck",
-    "worldgen.structure.MixinStructureManager"
+    "util.gamerule.MixinMinecraftServer"
   ],
   "client": [
-    "util.worldgen.MixinCreateWorldScreen"
+    "util.command.MixinCreateWorldScreen"
   ],
   "injectors": {
     "defaultRequire": 1

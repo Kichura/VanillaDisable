@@ -54,7 +54,10 @@ public class CommandConfigScreen extends Screen {
                         new Tab(Component.translatable("vd.command_config.tab.enchantments"), CommandDataHandler.enchantmentData, CommandDataHandler.enchantments, "enchantments"),
                         new Tab(Component.translatable("vd.command_config.tab.entities"), CommandDataHandler.entityData, CommandDataHandler.entities, "entities"),
                         new Tab(Component.translatable("vd.command_config.tab.items"), CommandDataHandler.itemData, CommandDataHandler.items, "items"),
-                        new Tab(Component.translatable("vd.command_config.tab.mob_categories"), CommandDataHandler.mobCategoryData, CommandDataHandler.mobCategories, "mob_categories")
+                        new Tab(Component.translatable("vd.command_config.tab.mob_categories"), CommandDataHandler.mobCategoryData, CommandDataHandler.mobCategories, "mob_categories"),
+                        new Tab(Component.translatable("vd.command_config.tab.biomes"), CommandDataHandler.biomeData, CommandDataHandler.biomes, "biomes"),
+                        new Tab(Component.translatable("vd.command_config.tab.structures"), CommandDataHandler.structureData, CommandDataHandler.structures, "structures"),
+                        new Tab(Component.translatable("vd.command_config.tab.placed_features"), CommandDataHandler.placedFeatureData, CommandDataHandler.placedFeatures, "placed_features")
                 ).build();
         this.addRenderableWidget(this.tabNavigationBar);
         tabNavigationBar.selectTab(0, false);

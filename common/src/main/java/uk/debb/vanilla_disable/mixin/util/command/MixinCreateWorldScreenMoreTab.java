@@ -4,7 +4,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package uk.debb.vanilla_disable.mixin.util.worldgen;
+package uk.debb.vanilla_disable.mixin.util.command;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;

@@ -17,16 +17,6 @@ import uk.debb.vanilla_disable.config.data.DataHandler;
 
 @Mixin(Enchantment.class)
 public abstract class MixinEnchantment {
-    @ModifyReturnValue(method = "canEnchant", at = @At("RETURN"))
-    private boolean vanillaDisable$canEnchant(boolean original, ItemStack stack) {
-        if (DataHandler.isConnectionNull()) return original;
-        if (stack.getMaxDamage() == 0) return original;
-        String item = "can_enchant_" + DataHandler.lightCleanup(DataHandler.getKeyFromItemRegistry(stack.getItem()));
-        ResourceLocation enchantment = DataHandler.enchantmentRegistry.getKey((Enchantment) (Object) this);
-        if (enchantment == null) return original;
-        return DataHandler.getCachedBoolean("enchantments", enchantment.toString(), item);
-    }
-
     @ModifyReturnValue(method = "areCompatible", at = @At("RETURN"))
     private static boolean vanillaDisable$areCompatible(boolean original, Holder<Enchantment> holder, Holder<Enchantment> holder2) {
         if (DataHandler.isConnectionNull()) return original;
@@ -39,5 +29,15 @@ public abstract class MixinEnchantment {
         String reversedOtherEnchantment = otherEnchantment.replace("compatible_with_", "minecraft:");
         return DataHandler.getCachedBoolean("enchantments", enchantment, otherEnchantment) ||
                 DataHandler.getCachedBoolean("enchantments", reversedOtherEnchantment, reversedEnchantment);
+    }
+
+    @ModifyReturnValue(method = "canEnchant", at = @At("RETURN"))
+    private boolean vanillaDisable$canEnchant(boolean original, ItemStack stack) {
+        if (DataHandler.isConnectionNull()) return original;
+        if (stack.getMaxDamage() == 0) return original;
+        String item = "can_enchant_" + DataHandler.lightCleanup(DataHandler.getKeyFromItemRegistry(stack.getItem()));
+        ResourceLocation enchantment = DataHandler.enchantmentRegistry.getKey((Enchantment) (Object) this);
+        if (enchantment == null) return original;
+        return DataHandler.getCachedBoolean("enchantments", enchantment.toString(), item);
     }
 }

@@ -23,7 +23,10 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import uk.debb.vanilla_disable.config.data.DataHandler;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class WorldgenConfigScreen extends Screen {
     private final CreateWorldScreen lastScreen;
@@ -183,7 +186,8 @@ public class WorldgenConfigScreen extends Screen {
 
             this.addEntry(new WorldgenConfigCategoryEntry(Component.translatable("vd.worldgen_config.category.biomes"), WorldgenConfigType.BIOME, this));
             WorldgenConfigScreen.this.biomes.stream().sorted().forEach(biome -> {
-                if (ObjectList.of("minecraft:plains", "minecraft:the_nether", "minecraft:the_end").contains(biome.toString())) return;
+                if (ObjectList.of("minecraft:plains", "minecraft:the_nether", "minecraft:the_end").contains(biome.toString()))
+                    return;
                 if (biome.toString().contains(WorldgenConfigScreen.this.search)) {
                     this.addEntry(new WorldgenConfigToggleEntry(biome.toString(), WorldgenConfigType.BIOME));
                 }

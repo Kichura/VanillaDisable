@@ -21,7 +21,8 @@ import uk.debb.vanilla_disable.config.data.DataHandler;
 
 @Mixin(Player.class)
 public abstract class MixinPlayer {
-    @Shadow public abstract FoodData getFoodData();
+    @Shadow
+    public abstract FoodData getFoodData();
 
     @Inject(method = "eat", at = @At("HEAD"))
     private void vanillaDisable$eat(Level level, ItemStack itemStack, FoodProperties foodProperties, CallbackInfoReturnable<ItemStack> cir) {

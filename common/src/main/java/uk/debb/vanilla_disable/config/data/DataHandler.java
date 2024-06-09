@@ -94,6 +94,11 @@ public class DataHandler {
     public static final Object2DoubleMap<String> doubleRowMaximums = new Object2DoubleArrayMap<>();
     public static final Object2ObjectMap<String, List<String>> stringColSuggestions = new Object2ObjectOpenHashMap<>();
     public static final ObjectList<String> differentDataTypes = new ObjectArrayList<>();
+    public static final Object2BooleanMap<String> biomeMap = new Object2BooleanOpenHashMap<>();
+    public static final Object2BooleanMap<String> structureMap = new Object2BooleanOpenHashMap<>();
+    public static final Object2BooleanMap<String> placedFeatureMap = new Object2BooleanOpenHashMap<>();
+    public static final Properties properties = new Properties();
+    public static final Object2ObjectMap<String, ObjectList<String>> legacyGameruleMap = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectMap<String, Object> memo = new Object2ObjectOpenHashMap<>();
     public static MinecraftServer server;
     public static boolean populationDone = false;
@@ -109,6 +114,8 @@ public class DataHandler {
     public static Registry<Biome> biomeRegistry;
     public static Registry<Structure> structureRegistry;
     public static Registry<PlacedFeature> placedFeatureRegistry;
+    public static File tomlFile;
+    public static File propertiesFile;
     private static Connection connection;
     private static Statement statement;
     private static String PATH;
@@ -118,14 +125,6 @@ public class DataHandler {
     private static Registry<EntityType<?>> entityTypeRegistry;
     private static Registry<BlockEntityType<?>> blockEntityRegistry;
     private static Registry<ResourceLocation> customStatRegistry;
-
-    public static final Object2BooleanMap<String> biomeMap = new Object2BooleanOpenHashMap<>();
-    public static final Object2BooleanMap<String> structureMap = new Object2BooleanOpenHashMap<>();
-    public static final Object2BooleanMap<String> placedFeatureMap = new Object2BooleanOpenHashMap<>();
-    public static File tomlFile;
-    public static File propertiesFile;
-    public static final Properties properties = new Properties();
-    public static final Object2ObjectMap<String, ObjectList<String>> legacyGameruleMap = new Object2ObjectOpenHashMap<>();
 
     /**
      * Cleans up data for display (removes underscores, 'namespace:' prefixes, 'group/' prefixes)

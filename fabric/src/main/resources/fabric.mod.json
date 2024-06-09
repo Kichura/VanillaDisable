@@ -24,9 +24,6 @@
   "icon": "assets/${mod_id}/icon.png",
   "environment": "*",
   "entrypoints": {
-    "modmenu": [
-      "uk.debb.vanilla_disable.config.global.ModMenuSettingsApi"
-    ],
     "client": [
       "uk.debb.vanilla_disable.LangFileManager"
     ]
@@ -41,7 +38,6 @@
     "fabricloader": "${fabric_loader_version_range}"
   },
   "suggests": {
-    "modmenu": "*",
     "fabric-resource-loader-v0": "*"
   }
 }

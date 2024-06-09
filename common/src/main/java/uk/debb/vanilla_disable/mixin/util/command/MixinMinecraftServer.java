@@ -27,8 +27,6 @@ public class MixinMinecraftServer {
 
     @Inject(method = "stopServer", at = @At("TAIL"))
     private void vanillaDisable$stopServer(CallbackInfo ci) {
-        CommandDataHandler.migrated = false;
-        CommandDataHandler.shouldMigrate = true;
         CommandDataHandler.closeConnection();
     }
 }

@@ -16,12 +16,6 @@ import uk.debb.vanilla_disable.data.worldgen.WorldgenDataHandler;
 
 @Mixin(CreateWorldScreen.class)
 public abstract class MixinCreateWorldScreen {
-    @Inject(method = "onCreate", at = @At("HEAD"))
-    private void vanillaDisable$onCreate(CallbackInfo ci) {
-        CommandDataHandler.shouldMigrate = false;
-        WorldgenDataHandler.shouldMigrate = false;
-    }
-
     @Inject(method = "popScreen", at = @At("HEAD"))
     private void vanillaDisable$popScreen(CallbackInfo ci) {
         WorldgenDataHandler.biomeMap.clear();

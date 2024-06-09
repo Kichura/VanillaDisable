@@ -26,9 +26,4 @@ public abstract class MixinMinecraftServer {
         WorldgenDataHandler.server = (MinecraftServer) (Object) this;
         WorldgenDataHandler.init();
     }
-
-    @Inject(method = "stopServer", at = @At("TAIL"))
-    private void vanillaDisable$stopServer(CallbackInfo ci) {
-        WorldgenDataHandler.shouldMigrate = true;
-    }
 }

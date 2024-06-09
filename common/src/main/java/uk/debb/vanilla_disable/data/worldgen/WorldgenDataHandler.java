@@ -24,8 +24,6 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.storage.LevelResource;
 import org.apache.commons.io.FileUtils;
 import uk.debb.vanilla_disable.Constants;
-import uk.debb.vanilla_disable.config.global.VanillaDisableConfig;
-import uk.debb.vanilla_disable.data.gamerule.GameruleMigrationDataHandler;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -44,7 +42,6 @@ public class WorldgenDataHandler {
     public static File directory;
     public static File tomlFile;
     public static File propertiesFile;
-    public static boolean shouldMigrate = true;
     public static boolean updated = false;
 
     /**
@@ -75,9 +72,6 @@ public class WorldgenDataHandler {
                 convertConfig();
             } else {
                 createConfig(true);
-                if (VanillaDisableConfig.autoMigration && shouldMigrate) {
-                    GameruleMigrationDataHandler.updateProperties();
-                }
             }
         } else {
             updateConfig();

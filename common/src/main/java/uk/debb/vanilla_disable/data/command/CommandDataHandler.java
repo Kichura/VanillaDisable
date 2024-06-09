@@ -47,8 +47,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.storage.LevelResource;
 import org.apache.commons.io.FileUtils;
-import uk.debb.vanilla_disable.config.global.VanillaDisableConfig;
-import uk.debb.vanilla_disable.data.gamerule.GameruleMigrationDataHandler;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -95,8 +93,6 @@ public class CommandDataHandler {
     public static Registry<DamageType> damageTypeRegistry;
     public static Registry<MobEffect> mobEffectRegistry;
     public static Registry<StatType<?>> statTypeRegistry;
-    public static boolean migrated = false;
-    public static boolean shouldMigrate = true;
     private static Connection connection;
     private static Statement statement;
     private static String PATH;
@@ -956,10 +952,6 @@ public class CommandDataHandler {
 
             generateData(true, "*");
 
-            if (!new File(PATH).exists() && shouldMigrate && VanillaDisableConfig.autoMigration) {
-                GameruleMigrationDataHandler.updateSql();
-                migrated = true;
-            }
             if (new File(PATH).exists()) {
                 Scanner scanner = new Scanner(new File(PATH));
                 while (scanner.hasNext()) {

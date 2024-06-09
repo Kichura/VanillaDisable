@@ -11,7 +11,6 @@ val H2_VERSION: String by rootProject.extra
 val PARCHMENT_MC_VERSION: String by rootProject.extra
 val PARCHMENT_VERSION: String by rootProject.extra
 val FABRIC_LOADER_VERSION: String by rootProject.extra
-val MODMENU_VERSION: String by rootProject.extra
 
 base {
     archivesName.set("vanilla_disable-fabric-mc${MINECRAFT_VERSION}")
@@ -32,7 +31,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${FABRIC_LOADER_VERSION}")
     modImplementation("com.h2database:h2:${H2_VERSION}")
     include("com.h2database:h2:${H2_VERSION}")
-    modCompileOnly("com.terraformersmc:modmenu:${MODMENU_VERSION}")
 
     implementation("com.google.code.findbugs:jsr305:3.0.1")
     compileOnly(project(":common"))

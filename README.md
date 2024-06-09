@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a fabric/neoforge mod that allows you to toggle or change many vanilla features through various configuration systems. Please see the wiki for instructions on how to use the systems. This tries to support the latest version of Minecraft. Mod compatibility is an aim but not always a reality.
+This is a fabric/quilt/neoforge mod that allows you to toggle or change many vanilla features through various configuration systems. Please see the wiki for instructions on how to use the systems. This tries to support the latest version of Minecraft. Mod compatibility is an aim but not always a reality.
 
 ## Downloads
 
@@ -10,7 +10,7 @@ You can download stable releases of the mod from [GitHub Releases](https://githu
 
 ## Dependencies/JIJs/Recommendations
 
-This mod has no hard dependencies, and will run on its own. However, if you are using fabric, installing [ModMenu](https://modrinth.com/mod/modmenu) will give you a global GUI and installing [Fabric API](https://modrinth.com/mod/fabric-api) for Fabric or [Quilted Standard Libraries](https://modrinth.com/mod/qsl) for is recommended. This mod also has some libraries included in the jar, which leads to the increased file size. You can read about these in [the wiki](https://github.com/DragonEggBedrockBreaking/VanillaDisable/wiki/Dependencies#jij). 
+This mod has no hard dependencies, and will run on its own. However, installing [Fabric API](https://modrinth.com/mod/fabric-api) for Fabric or [Quilted Standard Libraries](https://modrinth.com/mod/qsl) for Quilt is suggested. This mod also has some libraries included in the jar, which leads to the increased file size. You can read about these in [the wiki](https://github.com/DragonEggBedrockBreaking/VanillaDisable/wiki/Dependencies#jij). 
 
 ## Other
 

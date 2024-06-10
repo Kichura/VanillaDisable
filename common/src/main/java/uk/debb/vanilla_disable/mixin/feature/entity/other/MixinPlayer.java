@@ -33,6 +33,7 @@ public abstract class MixinPlayer {
                 DataHandler.lightCleanup(Objects.requireNonNull(DataHandler.damageTypeRegistry.getKey(source.type()))) + "_damage");
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Inject(method = "attack", at = @At("RETURN"))
     private void vanillaDisable$attack(Entity target, CallbackInfo ci) {
         boolean hasFireAspect = ((Player) (Object) this).getMainHandItem().getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY)

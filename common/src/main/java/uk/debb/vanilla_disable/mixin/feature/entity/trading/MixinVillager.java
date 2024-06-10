@@ -21,7 +21,7 @@ public abstract class MixinVillager {
     @Shadow
     private long lastRestockGameTime;
 
-    @SuppressWarnings("resource")
+    @SuppressWarnings("ConstantConditions resource")
     @ModifyReturnValue(method = "allowedToRestock", at = @At("RETURN"))
     private boolean vanillaDisable$allowedToRestock(boolean original) {
         int villagerDailyRestocks = DataHandler.getCachedInt("entities", "minecraft:villager", "daily_restocks");

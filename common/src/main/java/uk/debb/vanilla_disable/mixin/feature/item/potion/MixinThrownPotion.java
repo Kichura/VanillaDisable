@@ -7,34 +7,14 @@
 package uk.debb.vanilla_disable.mixin.feature.item.potion;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import net.minecraft.core.Holder;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataDefinitions;
 import uk.debb.vanilla_disable.config.data.DataUtils;
-import uk.debb.vanilla_disable.config.data.SqlManager;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Mixin(ThrownPotion.class)
 public abstract class MixinThrownPotion {
-    @Unique
-    private Object vanillaDisable$calculateEffect(Object original) {
-        String item = DataUtils.getKeyFromItemRegistry(((ThrownPotion) (Object) this).getItem().getItem());
-        Optional<Holder<Potion>> potion = ((PotionContents) original).potion();
-        if (potion.isEmpty()) return original;
-        String pot = DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.potionRegistry.getKey(potion.get().value())));
-        if (!SqlManager.getBoolean("items", item, pot + "_effect")) {
-            return PotionContents.EMPTY;
-        }
-        return original;
-    }
-
     @ModifyExpressionValue(
             method = "onHitBlock",
             at = @At(
@@ -43,7 +23,8 @@ public abstract class MixinThrownPotion {
             )
     )
     private Object vanillaDisable$getOrDefault1(Object original) {
-        return vanillaDisable$calculateEffect(original);
+        String item = DataUtils.getKeyFromItemRegistry(((ThrownPotion) (Object) this).getItem().getItem());
+        return DataUtils.getPotionContents((PotionContents) original, item);
     }
 
     @ModifyExpressionValue(
@@ -54,6 +35,7 @@ public abstract class MixinThrownPotion {
             )
     )
     private Object vanillaDisable$getOrDefault2(Object original) {
-        return vanillaDisable$calculateEffect(original);
+        String item = DataUtils.getKeyFromItemRegistry(((ThrownPotion) (Object) this).getItem().getItem());
+        return DataUtils.getPotionContents((PotionContents) original, item);
     }
 }

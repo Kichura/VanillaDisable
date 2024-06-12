@@ -6,16 +6,12 @@
 
 package uk.debb.vanilla_disable.mixin.feature.enchantment;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.block.Block;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import uk.debb.vanilla_disable.config.data.DataUtils;
-import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Block.class)
 public abstract class MixinBlock {
@@ -31,12 +27,7 @@ public abstract class MixinBlock {
     private static Object vanillaDisable$getDrops(Object value) {
         if (value instanceof ItemStack itemStack) {
             String item = "can_enchant_" + DataUtils.lightCleanup(DataUtils.getKeyFromItemRegistry(itemStack.getItem()));
-            ItemEnchantments itemEnchantments = itemStack.getEnchantments();
-            itemEnchantments.enchantments = itemEnchantments.enchantments.object2IntEntrySet().stream()
-                    .filter(e -> SqlManager.getBoolean("enchantments", DataUtils.getKeyFromEnchantmentRegistry(e.getKey().value()), item))
-                    .collect(Object2IntOpenHashMap::new, (m, e) -> m.put(e.getKey(), e.getIntValue()), Object2IntOpenHashMap::putAll);
-            EnchantmentHelper.setEnchantments(itemStack, itemEnchantments);
-            return itemStack;
+            return DataUtils.editAndGetEnchantments(item, itemStack);
         }
         return value;
     }

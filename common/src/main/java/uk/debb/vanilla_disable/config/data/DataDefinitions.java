@@ -64,6 +64,7 @@ public class DataDefinitions {
     public static final Object2DoubleMap<String> numRowMaximums = new Object2DoubleArrayMap<>();
     public static final Object2ObjectMap<String, List<String>> stringColSuggestions = new Object2ObjectOpenHashMap<>();
     public static final ObjectSet<String> differentDataTypes = new ObjectOpenHashSet<>();
+    public static final Object2ObjectMap<String, String> singularMap = new Object2ObjectOpenHashMap<>();
     public static MinecraftServer server;
     public static boolean populationDone = false;
     public static Registry<Biome> biomeRegistry;
@@ -80,7 +81,6 @@ public class DataDefinitions {
     public static Registry<Structure> structureRegistry;
     public static Registry<VillagerProfession> villagerProfessionRegistry;
     public static Registry<VillagerType> villagerTypeRegistry;
-    public static Object2ObjectMap<String, String> singularMap = new Object2ObjectOpenHashMap<>();
     private static Registry<BlockEntityType<?>> blockEntityRegistry;
     private static Registry<ResourceLocation> customStatRegistry;
 

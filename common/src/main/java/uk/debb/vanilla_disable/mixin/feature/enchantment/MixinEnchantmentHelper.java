@@ -7,12 +7,10 @@
 package uk.debb.vanilla_disable.mixin.feature.enchantment;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import uk.debb.vanilla_disable.config.data.DataUtils;
@@ -24,11 +22,7 @@ public abstract class MixinEnchantmentHelper {
     private static int vanillaDisable$getItemEnchantmentLevel(int original, Holder<Enchantment> holder, ItemStack itemStack) {
         String item = "can_enchant_" + DataUtils.lightCleanup(DataUtils.getKeyFromItemRegistry(itemStack.getItem()));
         if (!SqlManager.getBoolean("enchantments", DataUtils.getKeyFromEnchantmentRegistry(holder.value()), item)) {
-            ItemEnchantments itemEnchantments = itemStack.getEnchantments();
-            itemEnchantments.enchantments = itemEnchantments.enchantments.object2IntEntrySet().stream()
-                    .filter(e -> SqlManager.getBoolean("enchantments", DataUtils.getKeyFromEnchantmentRegistry(e.getKey().value()), item))
-                    .collect(Object2IntOpenHashMap::new, (m, e) -> m.put(e.getKey(), e.getIntValue()), Object2IntOpenHashMap::putAll);
-            EnchantmentHelper.setEnchantments(itemStack, itemEnchantments);
+            DataUtils.editAndGetEnchantments(item, itemStack);
             return 0;
         }
         return original;

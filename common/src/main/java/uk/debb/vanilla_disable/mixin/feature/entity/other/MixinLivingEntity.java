@@ -13,7 +13,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Objects;
 
@@ -21,10 +23,10 @@ import java.util.Objects;
 public abstract class MixinLivingEntity {
     @ModifyReturnValue(method = "canBeAffected", at = @At("RETURN"))
     private boolean vanillaDisable$canBeAffected(boolean original, MobEffectInstance effectInstance) {
-        if (DataHandler.isConnectionNull()) return original;
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
-        return DataHandler.getCachedBoolean("entities", entity,
-                DataHandler.lightCleanup(Objects.requireNonNull(DataHandler.mobEffectRegistry.getKey(effectInstance.getEffect().value()))) + "_effect");
+        if (SqlManager.isConnectionNull()) return original;
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
+        return SqlManager.getBoolean("entities", entity,
+                DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.mobEffectRegistry.getKey(effectInstance.getEffect().value()))) + "_effect");
     }
 
     @WrapWithCondition(
@@ -35,7 +37,7 @@ public abstract class MixinLivingEntity {
             )
     )
     private boolean vanillaDisable$aiStep(LivingEntity livingEntity) {
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
-        return DataHandler.getCachedBoolean("entities", entity, "ai");
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
+        return SqlManager.getBoolean("entities", entity, "ai");
     }
 }

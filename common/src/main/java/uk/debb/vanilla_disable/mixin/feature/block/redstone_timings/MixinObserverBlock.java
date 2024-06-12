@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.ObserverBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ObserverBlock.class)
 public abstract class MixinObserverBlock {
@@ -23,7 +23,7 @@ public abstract class MixinObserverBlock {
             index = 2
     )
     private int vanillaDisable$scheduleTick1(int delay) {
-        return DataHandler.getCachedInt("blocks", "minecraft:observer", "redstone_delay");
+        return SqlManager.getInt("blocks", "minecraft:observer", "redstone_delay");
     }
 
     @ModifyArg(
@@ -34,6 +34,6 @@ public abstract class MixinObserverBlock {
             )
     )
     private int vanillaDisable$scheduleTick2(int duration) {
-        return DataHandler.getCachedInt("blocks", "minecraft:observer", "redstone_duration");
+        return SqlManager.getInt("blocks", "minecraft:observer", "redstone_duration");
     }
 }

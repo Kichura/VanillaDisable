@@ -19,14 +19,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(AbstractCauldronBlock.class)
 public abstract class MixinAbstractCauldronBlock {
     @Inject(method = "useItemOn", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult, CallbackInfoReturnable<ItemInteractionResult> cir) {
-        String name = DataHandler.getKeyFromItemRegistry(itemStack.getItem());
-        if (!DataHandler.getCachedBoolean("items", name, "cauldron_interaction")) {
+        String name = DataUtils.getKeyFromItemRegistry(itemStack.getItem());
+        if (!SqlManager.getBoolean("items", name, "cauldron_interaction")) {
             cir.setReturnValue(ItemInteractionResult.FAIL);
         }
     }

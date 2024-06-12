@@ -19,7 +19,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.function.Predicate;
 
@@ -27,8 +28,8 @@ import java.util.function.Predicate;
 public abstract class MixinSetBlockCommand {
     @Inject(method = "setBlock", at = @At("HEAD"))
     private static void vanillaDisable$setBlock(CommandSourceStack source, BlockPos pos, BlockInput state, SetBlockCommand.Mode mode, @Nullable Predicate<BlockInWorld> predicate, CallbackInfoReturnable<Integer> cir) throws CommandSyntaxException {
-        String block = DataHandler.getKeyFromBlockRegistry(state.getState().getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "can_be_placed_by_command")) {
+        String block = DataUtils.getKeyFromBlockRegistry(state.getState().getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "can_be_placed_by_command")) {
             throw new SimpleCommandExceptionType(Component.translatable("vd.commands.setblock.disabled")).create();
         }
     }

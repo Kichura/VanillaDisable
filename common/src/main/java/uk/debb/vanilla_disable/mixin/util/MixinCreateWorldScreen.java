@@ -11,14 +11,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(CreateWorldScreen.class)
 public abstract class MixinCreateWorldScreen {
     @Inject(method = "popScreen", at = @At("HEAD"))
     private void vanillaDisable$popScreen(CallbackInfo ci) {
-        DataHandler.biomeMap.clear();
-        DataHandler.structureMap.clear();
-        DataHandler.placedFeatureMap.clear();
+        SqlManager.biomeMap.clear();
+        SqlManager.structureMap.clear();
+        SqlManager.placedFeatureMap.clear();
     }
 }

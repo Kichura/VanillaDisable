@@ -14,7 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack {
@@ -23,17 +24,17 @@ public abstract class MixinItemStack {
 
     @ModifyReturnValue(method = "getMaxDamage", at = @At("RETURN"))
     private int vanillaDisable$getMaxDamage(int original) {
-        if (DataHandler.isConnectionNull()) return original;
+        if (SqlManager.isConnectionNull()) return original;
         if (original == 0) return original;
-        String item = DataHandler.getKeyFromItemRegistry(this.getItem());
-        return DataHandler.getCachedInt("items", item, "durability");
+        String item = DataUtils.getKeyFromItemRegistry(this.getItem());
+        return SqlManager.getInt("items", item, "durability");
     }
 
     @ModifyReturnValue(method = "canBeHurtBy", at = @At("RETURN"))
     private boolean vanillaDisable$canBeHurtBy(boolean original, DamageSource damageSource) {
-        String item = DataHandler.getKeyFromItemRegistry(this.getItem());
+        String item = DataUtils.getKeyFromItemRegistry(this.getItem());
         if (damageSource.is(DamageTypeTags.IS_FIRE)) {
-            return DataHandler.getCachedBoolean("items", item, "burns");
+            return SqlManager.getBoolean("items", item, "burns");
         }
         return original;
     }

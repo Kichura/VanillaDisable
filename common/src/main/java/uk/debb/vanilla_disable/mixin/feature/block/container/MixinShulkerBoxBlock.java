@@ -14,13 +14,14 @@ import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ShulkerBoxBlock.class)
 public abstract class MixinShulkerBoxBlock {
     @ModifyReturnValue(method = "canOpen", at = @At("RETURN"))
     private static boolean vanillaDisable$canOpen(boolean original, BlockState state, Level level, BlockPos pos, ShulkerBoxBlockEntity blockEntity) {
-        String name = DataHandler.getKeyFromBlockRegistry(state.getBlock());
-        return original || !DataHandler.getCachedBoolean("blocks", name, "opening_blockable");
+        String name = DataUtils.getKeyFromBlockRegistry(state.getBlock());
+        return original || !SqlManager.getBoolean("blocks", name, "opening_blockable");
     }
 }

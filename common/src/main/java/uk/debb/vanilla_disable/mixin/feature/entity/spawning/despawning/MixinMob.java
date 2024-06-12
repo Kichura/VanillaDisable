@@ -13,7 +13,8 @@ import net.minecraft.world.entity.animal.Bucketable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Mob.class)
 public abstract class MixinMob {
@@ -32,7 +33,7 @@ public abstract class MixinMob {
             )
     )
     private boolean vanillaDisable$removeWhenFarAway(boolean original) {
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
-        return DataHandler.getCachedBoolean("entities", entity, "can_despawn") && vanillaDisable$checkDespawn$additionalRestrictionsMet();
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
+        return SqlManager.getBoolean("entities", entity, "can_despawn") && vanillaDisable$checkDespawn$additionalRestrictionsMet();
     }
 }

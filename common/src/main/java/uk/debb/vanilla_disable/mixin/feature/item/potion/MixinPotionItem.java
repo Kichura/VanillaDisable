@@ -13,7 +13,9 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -28,11 +30,11 @@ public abstract class MixinPotionItem {
             )
     )
     private Object vanillaDisable$getOrDefault(Object original) {
-        String item = DataHandler.getKeyFromItemRegistry((PotionItem) (Object) this);
+        String item = DataUtils.getKeyFromItemRegistry((PotionItem) (Object) this);
         Optional<Holder<Potion>> potion = ((PotionContents) original).potion();
         if (potion.isEmpty()) return original;
-        String pot = DataHandler.lightCleanup(Objects.requireNonNull(DataHandler.potionRegistry.getKey(potion.get().value())));
-        if (!DataHandler.getCachedBoolean("items", item, pot + "_effect")) {
+        String pot = DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.potionRegistry.getKey(potion.get().value())));
+        if (!SqlManager.getBoolean("items", item, pot + "_effect")) {
             return PotionContents.EMPTY;
         }
         return original;

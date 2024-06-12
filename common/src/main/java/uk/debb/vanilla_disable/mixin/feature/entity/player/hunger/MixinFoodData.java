@@ -11,7 +11,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(FoodData.class)
 public abstract class MixinFoodData {
@@ -23,7 +23,7 @@ public abstract class MixinFoodData {
             )
     )
     private Difficulty vanillaDisable$getDifficulty(Difficulty original) {
-        return DataHandler.getCachedBoolean("entities", "minecraft:player", "beta_hunger") ?
+        return SqlManager.getBoolean("entities", "minecraft:player", "beta_hunger") ?
                 Difficulty.PEACEFUL : original;
     }
 
@@ -35,6 +35,6 @@ public abstract class MixinFoodData {
             )
     )
     private boolean vanillaDisable$getBoolean(boolean original) {
-        return !DataHandler.getCachedBoolean("entities", "minecraft:player", "beta_hunger") && original;
+        return !SqlManager.getBoolean("entities", "minecraft:player", "beta_hunger") && original;
     }
 }

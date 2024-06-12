@@ -21,7 +21,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Objects;
 
@@ -29,8 +31,8 @@ import java.util.Objects;
 public abstract class MixinPlayer {
     @ModifyReturnValue(method = "isInvulnerableTo", at = @At(value = "RETURN"))
     private boolean vanillaDisable$isInvulnerableTo(boolean original, DamageSource source) {
-        return original || !DataHandler.getCachedBoolean("entities", "minecraft:player",
-                DataHandler.lightCleanup(Objects.requireNonNull(DataHandler.damageTypeRegistry.getKey(source.type()))) + "_damage");
+        return original || !SqlManager.getBoolean("entities", "minecraft:player",
+                DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.damageTypeRegistry.getKey(source.type()))) + "_damage");
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -39,15 +41,15 @@ public abstract class MixinPlayer {
         boolean hasFireAspect = ((Player) (Object) this).getMainHandItem().getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY)
                 .keySet().stream().anyMatch(enchantment -> enchantment.is(Enchantments.FIRE_ASPECT.location()));
         if (target instanceof Creeper creeper && hasFireAspect &&
-                DataHandler.getCachedBoolean("entities", "minecraft:creeper", "can_be_lit_by_fire_aspect")) {
+                SqlManager.getBoolean("entities", "minecraft:creeper", "can_be_lit_by_fire_aspect")) {
             creeper.ignite();
         }
     }
 
     @Inject(method = "interactOn", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$interactOn(Entity entityToInteractOn, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
-        String entityType = DataHandler.getKeyFromEntityTypeRegistry(entityToInteractOn.getType());
-        if (!DataHandler.getCachedBoolean("entities", entityType, "can_player_interact")) {
+        String entityType = DataUtils.getKeyFromEntityTypeRegistry(entityToInteractOn.getType());
+        if (!SqlManager.getBoolean("entities", entityType, "can_player_interact")) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }

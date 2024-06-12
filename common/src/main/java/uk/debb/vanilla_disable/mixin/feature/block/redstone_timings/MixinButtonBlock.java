@@ -11,7 +11,8 @@ import net.minecraft.world.level.block.ButtonBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(value = ButtonBlock.class, priority = 999)
 public abstract class MixinButtonBlock {
@@ -24,8 +25,8 @@ public abstract class MixinButtonBlock {
             index = 2
     )
     private int vanillaDisable$scheduleTick1(int original) {
-        String name = DataHandler.getKeyFromBlockRegistry((Block) (Object) this);
-        return DataHandler.getCachedInt("blocks", name, "redstone_duration");
+        String name = DataUtils.getKeyFromBlockRegistry((Block) (Object) this);
+        return SqlManager.getInt("blocks", name, "redstone_duration");
     }
 
     @ModifyArg(
@@ -37,7 +38,7 @@ public abstract class MixinButtonBlock {
             index = 2
     )
     private int vanillaDisable$scheduleTick2(int original) {
-        String name = DataHandler.getKeyFromBlockRegistry((Block) (Object) this);
-        return DataHandler.getCachedInt("blocks", name, "redstone_duration");
+        String name = DataUtils.getKeyFromBlockRegistry((Block) (Object) this);
+        return SqlManager.getInt("blocks", name, "redstone_duration");
     }
 }

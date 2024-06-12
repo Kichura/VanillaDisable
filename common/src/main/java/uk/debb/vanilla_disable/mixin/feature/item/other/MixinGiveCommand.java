@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Collection;
 
@@ -25,8 +26,8 @@ import java.util.Collection;
 public abstract class MixinGiveCommand {
     @Inject(method = "giveItem", at = @At("HEAD"))
     private static void vanillaDisable$giveItem(CommandSourceStack source, ItemInput item, Collection<ServerPlayer> targets, int count, CallbackInfoReturnable<Integer> cir) throws CommandSyntaxException {
-        String name = DataHandler.getKeyFromItemRegistry(item.getItem());
-        if (!DataHandler.getCachedBoolean("items", name, "can_be_given_by_command")) {
+        String name = DataUtils.getKeyFromItemRegistry(item.getItem());
+        if (!SqlManager.getBoolean("items", name, "can_be_given_by_command")) {
             throw new SimpleCommandExceptionType(Component.translatable("vd.commands.give.disabled")).create();
         }
     }

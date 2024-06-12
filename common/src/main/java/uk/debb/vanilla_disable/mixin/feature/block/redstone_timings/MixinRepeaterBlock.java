@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(RepeaterBlock.class)
 public abstract class MixinRepeaterBlock {
@@ -24,6 +24,6 @@ public abstract class MixinRepeaterBlock {
 
     @ModifyReturnValue(method = "getDelay", at = @At("RETURN"))
     private int vanillaDisable$getDelay(int original, BlockState state) {
-        return state.getValue(DELAY) * DataHandler.getCachedInt("blocks", "minecraft:repeater", "redstone_delay");
+        return state.getValue(DELAY) * SqlManager.getInt("blocks", "minecraft:repeater", "redstone_delay");
     }
 }

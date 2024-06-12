@@ -92,7 +92,7 @@
   "vd.commandRule.structures.enabled": "Toggle the structure's generation.",
   "vd.commandRule.placedFeatures.enabled": "Toggle the placed feature's generation.",
   "vd.commandRule.misc.enabled": "Toggle the miscellaneous feature: %s.",
-  "vd.commandRule.misc.raid_waves": "The number of raid waves that spawn on the given difficulty.",
+  "vd.commandRule.misc.raidWaves": "The number of raid waves that spawn on the given difficulty.",
   "vd.advancements.disabled.by.vd": "This advancement has been disabled by an operator.",
   "vd.commands.disabled.by.vd": "This command has been disabled by an operator.",
   "vd.commands.summon.disabled": "Summoning this entity with a command has been disabled by an operator.",

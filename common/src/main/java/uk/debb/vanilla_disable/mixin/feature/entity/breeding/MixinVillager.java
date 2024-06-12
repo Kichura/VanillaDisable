@@ -11,7 +11,8 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Villager.class)
 public abstract class MixinVillager {
@@ -23,7 +24,7 @@ public abstract class MixinVillager {
             )
     )
     private boolean vanillaDisable$contains(boolean original, ItemStack stack) {
-        String name = "can_breed_with_" + DataHandler.getKeyFromItemRegistry(stack.getItem());
-        return DataHandler.getCachedBoolean("entities", "minecraft:villager", name);
+        String name = "can_breed_with_" + DataUtils.getKeyFromItemRegistry(stack.getItem());
+        return SqlManager.getBoolean("entities", "minecraft:villager", name);
     }
 }

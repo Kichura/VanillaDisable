@@ -11,12 +11,12 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
 
 @Mixin({FixedBiomeSource.class, TheEndBiomeSource.class, MultiNoiseBiomeSource.class, CheckerboardColumnBiomeSource.class})
 public abstract class MultipleMixinBiomeSource {
     @ModifyReturnValue(method = "getNoiseBiome*", at = @At("RETURN"))
     private Holder<Biome> vanillaDisable$getNoiseBiome(Holder<Biome> original) {
-        return DataHandler.getBiome(original);
+        return DataUtils.getBiome(original);
     }
 }

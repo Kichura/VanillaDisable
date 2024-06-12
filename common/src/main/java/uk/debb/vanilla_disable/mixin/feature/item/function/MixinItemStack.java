@@ -12,7 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack {
@@ -24,8 +25,8 @@ public abstract class MixinItemStack {
             )
     )
     private Item vanillaDisable$getItem(Item original) {
-        String item = DataHandler.getKeyFromItemRegistry(original);
-        if (!DataHandler.getCachedBoolean("items", item, "works")) {
+        String item = DataUtils.getKeyFromItemRegistry(original);
+        if (!SqlManager.getBoolean("items", item, "works")) {
             return Items.AIR;
         }
         return original;

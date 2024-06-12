@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack {
@@ -29,13 +30,13 @@ public abstract class MixinItemStack {
         String dimension = context.getLevel().dimensionType().effectsLocation().toString().replace("the_", "").replace("minecraft:", "");
         String name = "";
         if (this.getItem() instanceof BlockItem blockItem) {
-            name = DataHandler.getKeyFromBlockRegistry(blockItem.getBlock());
+            name = DataUtils.getKeyFromBlockRegistry(blockItem.getBlock());
         } else if (this.getItem() instanceof BucketItem bucketItem) {
-            name = DataHandler.getKeyFromItemRegistry(bucketItem).replace("_bucket", "");
+            name = DataUtils.getKeyFromItemRegistry(bucketItem).replace("_bucket", "");
             if (name.contains("bucket") || (name.contains("water") && dimension.equals("nether"))) return;
         }
         if (!name.isEmpty()) {
-            if (!DataHandler.getCachedBoolean("blocks", name, "can_place_in_" + dimension)) {
+            if (!SqlManager.getBoolean("blocks", name, "can_place_in_" + dimension)) {
                 cir.setReturnValue(InteractionResult.FAIL);
             }
         }

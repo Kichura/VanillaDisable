@@ -13,7 +13,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(BreedGoal.class)
 public abstract class MixinBreedGoal {
@@ -23,13 +24,13 @@ public abstract class MixinBreedGoal {
 
     @ModifyReturnValue(method = "canUse", at = @At(value = "RETURN"))
     private boolean vanillaDisable$canUse(boolean original) {
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(this.animal.getType());
-        return original && DataHandler.getCachedBoolean("entities", entity, "can_breed");
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(this.animal.getType());
+        return original && SqlManager.getBoolean("entities", entity, "can_breed");
     }
 
     @ModifyReturnValue(method = "canContinueToUse", at = @At(value = "RETURN"))
     private boolean vanillaDisable$canContinueToUse(boolean original) {
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(this.animal.getType());
-        return original && DataHandler.getCachedBoolean("entities", entity, "can_breed");
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(this.animal.getType());
+        return original && SqlManager.getBoolean("entities", entity, "can_breed");
     }
 }

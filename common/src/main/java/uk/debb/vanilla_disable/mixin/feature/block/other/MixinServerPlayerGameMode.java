@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ServerPlayerGameMode.class)
 public abstract class MixinServerPlayerGameMode {
@@ -23,9 +24,9 @@ public abstract class MixinServerPlayerGameMode {
 
     @Inject(method = "destroyBlock", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$destroyBlock(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        String block = DataHandler.getKeyFromBlockRegistry(
+        String block = DataUtils.getKeyFromBlockRegistry(
                 this.level.getBlockState(pos).getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "can_break")) {
+        if (!SqlManager.getBoolean("blocks", block, "can_break")) {
             cir.setReturnValue(false);
         }
     }

@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity {
@@ -33,7 +33,7 @@ public abstract class MixinEntity {
     @SuppressWarnings("deprecation")
     @Inject(method = "onInsideBlock", at = @At("HEAD"))
     private void vanillaDisable$onInsideBlock(CallbackInfo ci) {
-        if (((Entity) (Object) this) instanceof Boat boat && DataHandler.getCachedBoolean("entities", "minecraft:boat", "alpha_behaviour")) {
+        if (((Entity) (Object) this) instanceof Boat boat && SqlManager.getBoolean("entities", "minecraft:boat", "alpha_behaviour")) {
             if (!boat.checkInWater()) {
                 this.hurt(this.level.damageSources().generic(), Float.MAX_VALUE);
             } else {

@@ -8,9 +8,7 @@ package uk.debb.vanilla_disable.config.gui;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,8 +23,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
 import uk.debb.vanilla_disable.config.data.DataType;
+import uk.debb.vanilla_disable.config.data.SetType;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.List;
 import java.util.Objects;
@@ -48,18 +48,9 @@ public class CommandConfigScreen extends Screen {
     @Override
     protected void init() {
         this.tabNavigationBar = TabNavigationBar.builder(this.tabManager, this.width)
-                .addTabs(new Tab(Component.translatable("vd.command_config.tab.advancements"), DataHandler.advancementData, DataHandler.advancements, "advancements"),
-                        new Tab(Component.translatable("vd.command_config.tab.blocks"), DataHandler.blockData, DataHandler.blocks, "blocks"),
-                        new Tab(Component.translatable("vd.command_config.tab.commands"), DataHandler.commandData, DataHandler.commands, "commands"),
-                        new Tab(Component.translatable("vd.command_config.tab.enchantments"), DataHandler.enchantmentData, DataHandler.enchantments, "enchantments"),
-                        new Tab(Component.translatable("vd.command_config.tab.entities"), DataHandler.entityData, DataHandler.entities, "entities"),
-                        new Tab(Component.translatable("vd.command_config.tab.items"), DataHandler.itemData, DataHandler.items, "items"),
-                        new Tab(Component.translatable("vd.command_config.tab.mob_categories"), DataHandler.mobCategoryData, DataHandler.mobCategories, "mob_categories"),
-                        new Tab(Component.translatable("vd.command_config.tab.biomes"), DataHandler.biomeData, DataHandler.biomes, "biomes"),
-                        new Tab(Component.translatable("vd.command_config.tab.structures"), DataHandler.structureData, DataHandler.structures, "structures"),
-                        new Tab(Component.translatable("vd.command_config.tab.placed_features"), DataHandler.placedFeatureData, DataHandler.placedFeatures, "placed_features"),
-                        new Tab(Component.translatable("vd.command_config.tab.misc"), DataHandler.miscData, DataHandler.misc, "misc")
-                ).build();
+                .addTabs(new ObjectArrayList<Tab>() {{
+                    DataDefinitions.colData.keySet().forEach(colsKey -> add(new Tab(colsKey)));
+                }}.toArray(new Tab[0])).build();
         this.addRenderableWidget(this.tabNavigationBar);
         tabNavigationBar.selectTab(0, false);
         this.repositionElements();
@@ -102,15 +93,15 @@ public class CommandConfigScreen extends Screen {
         }
         rl.children().clear();
         String selected = labelText.contains("/") && !labelText.startsWith("/") && !labelText.contains(":") ? "minecraft:" + labelText : labelText;
-        Object2ObjectMap<String, Component> tooltipData = rl.dataData.get(CommandConfigScreen.this.category);
+        Object2ObjectMap<String, ObjectObjectImmutablePair<DataType, Component>> tooltipData = rl.dataData.get(CommandConfigScreen.this.category);
         ObjectSet<String> cols = new ObjectOpenHashSet<>(tooltipData.keySet());
         cols.retainAll(rl.data.get(selected).keySet());
         cols.forEach(col -> {
-            switch (rl.dataTypeData.get(col)) {
-                case BOOLEAN -> rl.addEntry(new RightBooleanEntry(col, tooltipData.get(col), rl.table));
-                case INTEGER -> rl.addEntry(new RightIntEntry(col, tooltipData.get(col), rl.table));
-                case REAL -> rl.addEntry(new RightDoubleEntry(col, tooltipData.get(col), rl.table));
-                case CLOB -> rl.addEntry(new RightStringEntry(col, tooltipData.get(col), rl.table));
+            switch (tooltipData.get(col).left()) {
+                case BOOLEAN -> rl.addEntry(new RightBooleanEntry(col, tooltipData.get(col).right(), rl.table));
+                case INTEGER -> rl.addEntry(new RightIntEntry(col, tooltipData.get(col).right(), rl.table));
+                case REAL -> rl.addEntry(new RightDoubleEntry(col, tooltipData.get(col).right(), rl.table));
+                case CLOB -> rl.addEntry(new RightStringEntry(col, tooltipData.get(col).right(), rl.table));
             }
         });
     }
@@ -125,8 +116,11 @@ public class CommandConfigScreen extends Screen {
         public final ObjectSet<String> leftList;
         String search;
 
-        Tab(Component title, Object2ObjectMap<String, Object2ObjectMap<String, Component>> dataData, Object2ObjectMap<String, Object2ObjectMap<String, String>> data, String colsKey) {
-            super(title);
+        Tab(String colsKey) {
+            super(Component.translatable("vd.command_config.tab." + colsKey));
+            Object2ObjectMap<String, Object2ObjectMap<String, String>> data = DataDefinitions.rowData.get(colsKey);
+            Object2ObjectMap<String, Object2ObjectMap<String, ObjectObjectImmutablePair<DataType, Component>>> dataData = DataDefinitions.colData.get(colsKey);
+
             String[] categories = dataData.keySet().toArray(new String[0]);
             ObjectSet<String> leftList = data.keySet();
 
@@ -135,7 +129,7 @@ public class CommandConfigScreen extends Screen {
 
             GridLayout.RowHelper rowHelper = this.layout.rowSpacing(8).createRowHelper(1);
             int width = CommandConfigScreen.this.width;
-            RightList rl = new RightList(categories.length, dataData, data, DataHandler.cols.get(colsKey), colsKey);
+            RightList rl = new RightList(categories.length, dataData, data, colsKey);
             rowHelper.addChild(rl);
             LeftList ll = new LeftList(leftList, rl);
             rowHelper.addChild(ll);
@@ -153,11 +147,11 @@ public class CommandConfigScreen extends Screen {
             }
 
             Button defaultsButton = Button.builder(Component.translatable("vd.command_config.defaults"), button -> {
-                DataHandler.resetAll();
+                SqlManager.resetAll();
                 Objects.requireNonNull(CommandConfigScreen.this.minecraft).setScreen(new CommandConfigScreen(CommandConfigScreen.this.lastScreen));
             }).build();
             Button cancelButton = Button.builder(Component.translatable("vd.command_config.cancel"), button -> {
-                DataHandler.undo(CommandConfigScreen.this.setValues);
+                SqlManager.undo(CommandConfigScreen.this.setValues);
                 CommandConfigScreen.this.onClose();
             }).build();
             Button doneButton = Button.builder(Component.translatable("vd.command_config.done"), button ->
@@ -279,13 +273,13 @@ public class CommandConfigScreen extends Screen {
             super(main, tooltip);
             String labelText = CommandConfigScreen.this.labelText;
             String selected = labelText.contains("/") && !labelText.startsWith("/") && !labelText.contains(":") ? "minecraft:" + labelText : labelText;
-            boolean value = DataHandler.getCachedBoolean(table, selected, main);
+            boolean value = SqlManager.getBoolean(table, selected, main);
 
             cycleButton = CycleButton.onOffBuilder(value)
                     .displayOnlyValue()
                     .withCustomNarration(booleanCycleButton -> booleanCycleButton.createDefaultNarrationMessage().append("\n").append(main))
                     .create(10, 5, 44, 20, Component.literal(main), (button, value1) -> {
-                        DataHandler.setValue(table, selected, main, Boolean.toString(value1), false);
+                        SqlManager.setValues(table, selected, main, Boolean.toString(value1), false, null, SetType.ONE);
                         ++CommandConfigScreen.this.setValues;
                     });
 
@@ -308,17 +302,17 @@ public class CommandConfigScreen extends Screen {
             super(main, tooltip);
             String labelText = CommandConfigScreen.this.labelText;
             String selected = labelText.contains("/") && !labelText.startsWith("/") && !labelText.contains(":") ? "minecraft:" + labelText : labelText;
-            int value = DataHandler.getCachedInt(table, selected, main);
+            int value = SqlManager.getInt(table, selected, main);
 
             editBox = new EditBox(Objects.requireNonNull(CommandConfigScreen.this.minecraft).font, 10, 5, 44, 20, Component.literal(main + "\n"));
             editBox.setValue(Integer.toString(value));
             editBox.setResponder(string -> {
                 try {
                     if (Integer.parseInt(string) >= 0 &&
-                            (!DataHandler.intRowMaximums.containsKey(main) ||
-                                    Integer.parseInt(string) <= DataHandler.intRowMaximums.getInt(main))) {
+                            (!DataDefinitions.numRowMaximums.containsKey(main) ||
+                                    Integer.parseInt(string) <= DataDefinitions.numRowMaximums.getDouble(main))) {
                         editBox.setTextColor(14737632);
-                        DataHandler.setValue(table, selected, main, string, false);
+                        SqlManager.setValues(table, selected, main, string, false, null, SetType.ONE);
                         ++CommandConfigScreen.this.setValues;
                     } else {
                         editBox.setTextColor(16711680);
@@ -347,17 +341,17 @@ public class CommandConfigScreen extends Screen {
             super(main, tooltip);
             String labelText = CommandConfigScreen.this.labelText;
             String selected = labelText.contains("/") && !labelText.startsWith("/") && !labelText.contains(":") ? "minecraft:" + labelText : labelText;
-            double value = DataHandler.getCachedDouble(table, selected, main);
+            double value = SqlManager.getDouble(table, selected, main);
 
             editBox = new EditBox(Objects.requireNonNull(CommandConfigScreen.this.minecraft).font, 10, 5, 44, 20, Component.literal(main + "\n"));
             editBox.setValue(Double.toString(value));
             editBox.setResponder(string -> {
                 try {
                     if (Double.parseDouble(string) >= 0 &&
-                            (!DataHandler.doubleRowMaximums.containsKey(main) ||
-                                    Double.parseDouble(string) <= DataHandler.doubleRowMaximums.getDouble(main))) {
+                            (!DataDefinitions.numRowMaximums.containsKey(main) ||
+                                    Double.parseDouble(string) <= DataDefinitions.numRowMaximums.getDouble(main))) {
                         editBox.setTextColor(14737632);
-                        DataHandler.setValue(table, selected, main, string, false);
+                        SqlManager.setValues(table, selected, main, string, false, null, SetType.ONE);
                         ++CommandConfigScreen.this.setValues;
                     } else {
                         editBox.setTextColor(16711680);
@@ -386,9 +380,9 @@ public class CommandConfigScreen extends Screen {
             super(main, tooltip);
             String labelText = CommandConfigScreen.this.labelText;
             String selected = labelText.contains("/") && !labelText.startsWith("/") && !labelText.contains(":") ? "minecraft:" + labelText : labelText;
-            String value = DataHandler.getCachedString(table, selected, main);
+            String value = SqlManager.getString(table, selected, main);
 
-            List<String> possible = DataHandler.stringColSuggestions.get(main);
+            List<String> possible = DataDefinitions.stringColSuggestions.get(main);
             button = Button.builder(Component.literal(value), (buttonWidget) -> {
                 int currentIndex = possible.indexOf(buttonWidget.getMessage().getString());
                 if (currentIndex == possible.size() - 1) {
@@ -398,7 +392,7 @@ public class CommandConfigScreen extends Screen {
                 }
                 String newVal = possible.get(currentIndex);
                 buttonWidget.setMessage(Component.literal(newVal));
-                DataHandler.setValue(table, selected, main, newVal, true);
+                SqlManager.setValues(table, selected, main, newVal, true, null, SetType.ONE);
                 ++CommandConfigScreen.this.setValues;
             }).pos(10, 5).size(66, 20).build();
             this.children.add(button);
@@ -414,17 +408,15 @@ public class CommandConfigScreen extends Screen {
     }
 
     class RightList extends ContainerObjectSelectionList<RightEntry> {
-        final Object2ObjectMap<String, Object2ObjectMap<String, Component>> dataData;
+        final Object2ObjectMap<String, Object2ObjectMap<String, ObjectObjectImmutablePair<DataType, Component>>> dataData;
         final Object2ObjectMap<String, Object2ObjectMap<String, String>> data;
-        final Object2ObjectMap<String, DataType> dataTypeData;
         final String table;
 
-        public RightList(int numCategories, Object2ObjectMap<String, Object2ObjectMap<String, Component>> dataData, Object2ObjectMap<String, Object2ObjectMap<String, String>> data, Object2ObjectMap<String, DataType> dataTypeData, String table) {
+        public RightList(int numCategories, Object2ObjectMap<String, Object2ObjectMap<String, ObjectObjectImmutablePair<DataType, Component>>> dataData, Object2ObjectMap<String, Object2ObjectMap<String, String>> data, String table) {
             super(Objects.requireNonNull(CommandConfigScreen.this.minecraft), (int) (CommandConfigScreen.this.width * 0.48), CommandConfigScreen.this.height - (numCategories <= 1 ? 75 : 100), numCategories <= 1 ? 50 : 75, 24);
             this.setX(CommandConfigScreen.this.width / 2);
             this.dataData = dataData;
             this.data = data;
-            this.dataTypeData = dataTypeData;
             this.table = table;
         }
 

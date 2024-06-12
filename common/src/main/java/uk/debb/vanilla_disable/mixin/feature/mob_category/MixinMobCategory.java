@@ -11,7 +11,7 @@ import net.minecraft.world.entity.MobCategory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(MobCategory.class)
 public abstract class MixinMobCategory {
@@ -20,7 +20,7 @@ public abstract class MixinMobCategory {
 
     @ModifyReturnValue(method = "getMaxInstancesPerChunk", at = @At("RETURN"))
     private int vanillaDisable$getMaxInstancesPerChunk(int original) {
-        if (DataHandler.isConnectionNull()) return original;
-        return DataHandler.getCachedInt("mob_categories", this.getName(), "mobcap");
+        if (SqlManager.isConnectionNull()) return original;
+        return SqlManager.getInt("mob_categories", this.getName(), "mobcap");
     }
 }

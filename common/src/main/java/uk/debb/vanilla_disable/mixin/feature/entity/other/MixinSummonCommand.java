@@ -20,14 +20,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(SummonCommand.class)
 public abstract class MixinSummonCommand {
     @Inject(method = "createEntity", at = @At("HEAD"))
     private static void vanillaDisable$createEntity(CommandSourceStack source, Holder.Reference<EntityType<?>> type, Vec3 pos, CompoundTag tag, boolean randomizeProperties, CallbackInfoReturnable<Entity> cir) throws CommandSyntaxException {
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(type.value());
-        if (!DataHandler.getCachedBoolean("entities", entity, "can_be_summoned")) {
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(type.value());
+        if (!SqlManager.getBoolean("entities", entity, "can_be_summoned")) {
             throw new SimpleCommandExceptionType(Component.translatable("vd.commands.summon.disabled")).create();
         }
     }

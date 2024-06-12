@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.data.command.CommandDataHandler;
+import uk.debb.vanilla_disable.data.command.SqlManager;
 
 @Mixin(BucketItem.class)
 public abstract class MixinBucketItem {
@@ -31,7 +31,7 @@ public abstract class MixinBucketItem {
     )
     private boolean vanillaDisable$isVaporisedOnPlacement(boolean original) {
         if (original && this.content.equals(Fluids.WATER)) {
-            return !CommandDataHandler.getCachedBoolean("blocks", "minecraft:water", "can_place_in_nether");
+            return !SqlManager.getBoolean("blocks", "minecraft:water", "can_place_in_nether");
         }
         return original;
     }
@@ -45,7 +45,7 @@ public abstract class MixinBucketItem {
     )
     private boolean vanillaDisable$ultraWarm(boolean original) {
         if (original && this.content.equals(Fluids.WATER)) {
-            return !CommandDataHandler.getCachedBoolean("blocks", "minecraft:water", "can_place_in_nether");
+            return !SqlManager.getBoolean("blocks", "minecraft:water", "can_place_in_nether");
         }
         return original;
     }

@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(TemptGoal.class)
 public abstract class MixinTemptGoal {
@@ -25,10 +26,10 @@ public abstract class MixinTemptGoal {
 
     @ModifyReturnValue(method = "shouldFollow", at = @At("RETURN"))
     private boolean shouldFollow(boolean original, LivingEntity livingEntity) {
-        if (DataHandler.isConnectionNull()) return original;
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(this.mob.getType());
+        if (SqlManager.isConnectionNull()) return original;
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(this.mob.getType());
         Item mainHandItem = livingEntity.getMainHandItem().getItem();
         Item offHandItem = livingEntity.getOffhandItem().getItem();
-        return DataHandler.getCachedBreedingItems(entity).stream().anyMatch(itemStack -> itemStack.is(mainHandItem) || itemStack.is(offHandItem));
+        return SqlManager.getBreedingItems(entity).stream().anyMatch(itemStack -> itemStack.is(mainHandItem) || itemStack.is(offHandItem));
     }
 }

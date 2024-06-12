@@ -11,7 +11,8 @@ import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Objects;
 
@@ -19,12 +20,12 @@ import java.util.Objects;
 public abstract class MixinBiomeGenerationSettings {
     @ModifyReturnValue(method = "hasFeature", at = @At("RETURN"))
     private boolean vanillaDisable$hasFeature(boolean original, PlacedFeature feature) {
-        if (DataHandler.placedFeatureRegistry == null || DataHandler.server == null) return original;
-        String rule = Objects.requireNonNull(DataHandler.placedFeatureRegistry.getKey(feature)).toString();
-        if (!DataHandler.placedFeatureMap.isEmpty() && !DataHandler.placedFeatureMap.getOrDefault(rule, true)) {
+        if (DataDefinitions.placedFeatureRegistry == null || DataDefinitions.server == null) return original;
+        String rule = Objects.requireNonNull(DataDefinitions.placedFeatureRegistry.getKey(feature)).toString();
+        if (!SqlManager.placedFeatureMap.isEmpty() && !SqlManager.placedFeatureMap.getOrDefault(rule, true)) {
             return false;
         }
-        if (DataHandler.populationDone && !DataHandler.getCachedBoolean("placed_features", rule, "enabled")) {
+        if (DataDefinitions.populationDone && !SqlManager.getBoolean("placed_features", rule, "enabled")) {
             return false;
         }
         return original;

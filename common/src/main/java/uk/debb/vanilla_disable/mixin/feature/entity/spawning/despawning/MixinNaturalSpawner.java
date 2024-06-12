@@ -12,7 +12,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.NaturalSpawner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(NaturalSpawner.class)
 public abstract class MixinNaturalSpawner {
@@ -24,7 +25,7 @@ public abstract class MixinNaturalSpawner {
             )
     )
     private static boolean vanillaDisable$removeWhenFarAway(boolean original, ServerLevel level, Mob mob, double distance) {
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(mob.getType());
-        return DataHandler.getCachedBoolean("entities", entity, "can_despawn");
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(mob.getType());
+        return SqlManager.getBoolean("entities", entity, "can_despawn");
     }
 }

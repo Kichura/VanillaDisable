@@ -14,14 +14,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin({Husk.class, Zombie.class})
 public abstract class MultipleMixinUnderwaterConversion {
     @Inject(method = "doUnderWaterConversion", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$doUnderWaterConversion(CallbackInfo ci) {
         String entity = ((Entity) (Object) this).getType().equals(EntityType.HUSK) ? "minecraft:zombie" : "minecraft:drowned";
-        if (!DataHandler.getCachedBoolean("entities", entity, "can_be_converted_to")) {
+        if (!SqlManager.getBoolean("entities", entity, "can_be_converted_to")) {
             ci.cancel();
         }
     }

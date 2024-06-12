@@ -16,7 +16,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class MixinBlockStateBase {
@@ -25,24 +26,24 @@ public abstract class MixinBlockStateBase {
 
     @Inject(method = "useWithoutItem", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$useWithoutItem(CallbackInfoReturnable<InteractionResult> cir) {
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "can_interact")) {
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "can_interact")) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }
 
     @Inject(method = "useItemOn", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$useItemOn(CallbackInfoReturnable<InteractionResult> cir) {
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "can_interact")) {
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "can_interact")) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }
 
     @ModifyReturnValue(method = "getMenuProvider", at = @At("RETURN"))
     private MenuProvider vanillaDisable$modifyMenuProvider(MenuProvider original) {
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "can_interact")) {
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "can_interact")) {
             return null;
         }
         return original;
@@ -50,22 +51,22 @@ public abstract class MixinBlockStateBase {
 
     @ModifyReturnValue(method = "ignitedByLava", at = @At("RETURN"))
     private boolean vanillaDisable$ignitedByLava(boolean original) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        return DataHandler.getCachedBoolean("blocks", block, "ignited_by_lava");
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        return SqlManager.getBoolean("blocks", block, "ignited_by_lava");
     }
 
     @ModifyReturnValue(method = "getDestroySpeed", at = @At("RETURN"))
     private float vanillaDisable$getDestroySpeed(float original) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        return (float) DataHandler.getCachedDouble("blocks", block, "destroy_speed");
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        return (float) SqlManager.getDouble("blocks", block, "destroy_speed");
     }
 
     @ModifyReturnValue(method = "requiresCorrectToolForDrops", at = @At("RETURN"))
     private boolean vanillaDisable$requiresCorrectToolForDrops(boolean original) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        return DataHandler.getCachedBoolean("blocks", block, "requires_correct_tool_for_drops");
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        return SqlManager.getBoolean("blocks", block, "requires_correct_tool_for_drops");
     }
 }

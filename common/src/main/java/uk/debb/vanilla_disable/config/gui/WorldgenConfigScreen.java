@@ -21,7 +21,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,12 +44,12 @@ public class WorldgenConfigScreen extends Screen {
     @Override
     protected void init() {
         RegistryAccess.Frozen registryAccess = this.lastScreen.getUiState().getSettings().worldgenRegistries().compositeAccess();
-        DataHandler.biomeRegistry = registryAccess.registryOrThrow(Registries.BIOME);
-        DataHandler.structureRegistry = registryAccess.registryOrThrow(Registries.STRUCTURE);
-        DataHandler.placedFeatureRegistry = registryAccess.registryOrThrow(Registries.PLACED_FEATURE);
-        biomes = DataHandler.biomeRegistry.keySet();
-        structures = DataHandler.structureRegistry.keySet();
-        placedFeatures = DataHandler.placedFeatureRegistry.keySet();
+        DataDefinitions.biomeRegistry = registryAccess.registryOrThrow(Registries.BIOME);
+        DataDefinitions.structureRegistry = registryAccess.registryOrThrow(Registries.STRUCTURE);
+        DataDefinitions.placedFeatureRegistry = registryAccess.registryOrThrow(Registries.PLACED_FEATURE);
+        biomes = DataDefinitions.biomeRegistry.keySet();
+        structures = DataDefinitions.structureRegistry.keySet();
+        placedFeatures = DataDefinitions.placedFeatureRegistry.keySet();
         WorldgenConfigList worldgenConfigList = new WorldgenConfigList();
         this.addRenderableWidget(worldgenConfigList);
 
@@ -62,17 +63,17 @@ public class WorldgenConfigScreen extends Screen {
         this.addRenderableWidget(searchBox);
 
         Button resetButton = Button.builder(Component.translatable("vd.worldgen_config.reset_all"), (button) -> {
-            this.biomes.forEach(biome -> DataHandler.biomeMap.put(biome.toString(), true));
-            this.structures.forEach(structure -> DataHandler.structureMap.put(structure.toString(), true));
-            this.placedFeatures.forEach(placedFeature -> DataHandler.placedFeatureMap.put(placedFeature.toString(), true));
-            DataHandler.placedFeatureMap.put("minecraft_unofficial:end_spike_cage", true);
+            this.biomes.forEach(biome -> SqlManager.biomeMap.put(biome.toString(), true));
+            this.structures.forEach(structure -> SqlManager.structureMap.put(structure.toString(), true));
+            this.placedFeatures.forEach(placedFeature -> SqlManager.placedFeatureMap.put(placedFeature.toString(), true));
+            SqlManager.placedFeatureMap.put("minecraft_unofficial:end_spike_cage", true);
             worldgenConfigList.refreshEntries();
         }).width(80).build();
         Button disableButton = Button.builder(Component.translatable("vd.worldgen_config.disable_all"), (button) -> {
-            this.biomes.forEach(biome -> DataHandler.biomeMap.put(biome.toString(), false));
-            this.structures.forEach(structure -> DataHandler.structureMap.put(structure.toString(), false));
-            this.placedFeatures.forEach(placedFeature -> DataHandler.placedFeatureMap.put(placedFeature.toString(), false));
-            DataHandler.placedFeatureMap.put("minecraft_unofficial:end_spike_cage", false);
+            this.biomes.forEach(biome -> SqlManager.biomeMap.put(biome.toString(), false));
+            this.structures.forEach(structure -> SqlManager.structureMap.put(structure.toString(), false));
+            this.placedFeatures.forEach(placedFeature -> SqlManager.placedFeatureMap.put(placedFeature.toString(), false));
+            SqlManager.placedFeatureMap.put("minecraft_unofficial:end_spike_cage", false);
             worldgenConfigList.refreshEntries();
         }).width(80).build();
         Button doneButton = Button.builder(Component.translatable("vd.worldgen_config.done"), (button) -> {
@@ -129,17 +130,17 @@ public class WorldgenConfigScreen extends Screen {
             this.button = Button.builder(Component.translatable("vd.worldgen_config.toggle_category"), button -> {
                 switch (type) {
                     case BIOME -> {
-                        boolean val = Collections.frequency(DataHandler.biomeMap.values(), false) < WorldgenConfigScreen.this.biomes.size() / 2;
-                        WorldgenConfigScreen.this.biomes.forEach(biome -> DataHandler.biomeMap.put(biome.toString(), !val));
+                        boolean val = Collections.frequency(SqlManager.biomeMap.values(), false) < WorldgenConfigScreen.this.biomes.size() / 2;
+                        WorldgenConfigScreen.this.biomes.forEach(biome -> SqlManager.biomeMap.put(biome.toString(), !val));
                     }
                     case STRUCTURE -> {
-                        boolean val = Collections.frequency(DataHandler.structureMap.values(), false) < WorldgenConfigScreen.this.structures.size() / 2;
-                        WorldgenConfigScreen.this.structures.forEach(structure -> DataHandler.structureMap.put(structure.toString(), !val));
+                        boolean val = Collections.frequency(SqlManager.structureMap.values(), false) < WorldgenConfigScreen.this.structures.size() / 2;
+                        WorldgenConfigScreen.this.structures.forEach(structure -> SqlManager.structureMap.put(structure.toString(), !val));
                     }
                     case PLACED_FEATURE -> {
-                        boolean val = Collections.frequency(DataHandler.placedFeatureMap.values(), false) < WorldgenConfigScreen.this.placedFeatures.size() / 2;
-                        WorldgenConfigScreen.this.placedFeatures.forEach(placedFeature -> DataHandler.placedFeatureMap.put(placedFeature.toString(), !val));
-                        DataHandler.placedFeatureMap.put("minecraft_unofficial:end_spike_cage", !val);
+                        boolean val = Collections.frequency(SqlManager.placedFeatureMap.values(), false) < WorldgenConfigScreen.this.placedFeatures.size() / 2;
+                        WorldgenConfigScreen.this.placedFeatures.forEach(placedFeature -> SqlManager.placedFeatureMap.put(placedFeature.toString(), !val));
+                        SqlManager.placedFeatureMap.put("minecraft_unofficial:end_spike_cage", !val);
                     }
                 }
                 list.refreshEntries();
@@ -160,12 +161,12 @@ public class WorldgenConfigScreen extends Screen {
         private final Checkbox checkbox;
 
         WorldgenConfigToggleEntry(String name, WorldgenConfigType type) {
-            boolean value = DataHandler.biomeMap.getOrDefault(name, true) && DataHandler.structureMap.getOrDefault(name, true) && DataHandler.placedFeatureMap.getOrDefault(name, true);
+            boolean value = SqlManager.biomeMap.getOrDefault(name, true) && SqlManager.structureMap.getOrDefault(name, true) && SqlManager.placedFeatureMap.getOrDefault(name, true);
             this.checkbox = Checkbox.builder(Component.literal(name), WorldgenConfigScreen.this.font).selected(value).onValueChange((checkbox, newVal) -> {
                 switch (type) {
-                    case BIOME -> DataHandler.biomeMap.put(name, newVal);
-                    case STRUCTURE -> DataHandler.structureMap.put(name, newVal);
-                    case PLACED_FEATURE -> DataHandler.placedFeatureMap.put(name, newVal);
+                    case BIOME -> SqlManager.biomeMap.put(name, newVal);
+                    case STRUCTURE -> SqlManager.structureMap.put(name, newVal);
+                    case PLACED_FEATURE -> SqlManager.placedFeatureMap.put(name, newVal);
                 }
             }).build();
             this.children.add(this.checkbox);
@@ -218,7 +219,7 @@ public class WorldgenConfigScreen extends Screen {
                     for (GuiEventListener c : child.children()) {
                         if (c instanceof Checkbox) {
                             String name = child.childrenNames.get(i);
-                            ((Checkbox) c).selected = DataHandler.biomeMap.getOrDefault(name, true) && DataHandler.structureMap.getOrDefault(name, true) && DataHandler.placedFeatureMap.getOrDefault(name, true);
+                            ((Checkbox) c).selected = SqlManager.biomeMap.getOrDefault(name, true) && SqlManager.structureMap.getOrDefault(name, true) && SqlManager.placedFeatureMap.getOrDefault(name, true);
                             ++i;
                         }
                     }

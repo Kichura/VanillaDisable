@@ -13,7 +13,9 @@ import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.decoration.PaintingVariants;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Objects;
 
@@ -21,8 +23,8 @@ import java.util.Objects;
 public abstract class MixinPainting {
     @ModifyReturnValue(method = "getVariant()Lnet/minecraft/core/Holder;", at = @At("RETURN"))
     private Holder<PaintingVariant> vanillaDisable$getVariant(Holder<PaintingVariant> original) {
-        if (!DataHandler.getCachedBoolean("entities", "minecraft:painting", DataHandler.lightCleanup(original.value().assetId()) + "_painting")) {
-            return new Holder.Direct<>(Objects.requireNonNull(DataHandler.paintingVariantRegistry.get(PaintingVariants.KEBAB)));
+        if (!SqlManager.getBoolean("entities", "minecraft:painting", DataUtils.lightCleanup(original.value().assetId()) + "_painting")) {
+            return new Holder.Direct<>(Objects.requireNonNull(DataDefinitions.paintingVariantRegistry.get(PaintingVariants.KEBAB)));
         }
         return original;
     }

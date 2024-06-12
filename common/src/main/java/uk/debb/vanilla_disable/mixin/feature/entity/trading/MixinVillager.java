@@ -12,7 +12,7 @@ import net.minecraft.world.entity.npc.Villager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Villager.class)
 public abstract class MixinVillager {
@@ -24,7 +24,7 @@ public abstract class MixinVillager {
     @SuppressWarnings("ConstantConditions resource")
     @ModifyReturnValue(method = "allowedToRestock", at = @At("RETURN"))
     private boolean vanillaDisable$allowedToRestock(boolean original) {
-        int villagerDailyRestocks = DataHandler.getCachedInt("entities", "minecraft:villager", "daily_restocks");
+        int villagerDailyRestocks = SqlManager.getInt("entities", "minecraft:villager", "daily_restocks");
         long restockTimeLimit = 4800L / villagerDailyRestocks;
         return this.numberOfRestocksToday == 0 || this.numberOfRestocksToday < 2 && ((Entity) (Object) this).level().getGameTime() > this.lastRestockGameTime + restockTimeLimit;
     }

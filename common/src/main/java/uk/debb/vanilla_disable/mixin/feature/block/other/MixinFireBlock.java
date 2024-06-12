@@ -12,23 +12,24 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(FireBlock.class)
 public abstract class MixinFireBlock {
     @ModifyReturnValue(method = "getBurnOdds", at = @At("RETURN"))
     private int vanillaDisable$getBurnOdds(int original, BlockState state) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(state.getBlock());
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(state.getBlock());
         return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
-                ? 0 : DataHandler.getCachedInt("blocks", block, "burn_odds");
+                ? 0 : SqlManager.getInt("blocks", block, "burn_odds");
     }
 
     @ModifyReturnValue(method = "getIgniteOdds(Lnet/minecraft/world/level/block/state/BlockState;)I", at = @At("RETURN"))
     private int vanillaDisable$getIgniteOdds(int original, BlockState state) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(state.getBlock());
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(state.getBlock());
         return state.hasProperty(BlockStateProperties.WATERLOGGED) && state.getValue(BlockStateProperties.WATERLOGGED)
-                ? 0 : DataHandler.getCachedInt("blocks", block, "ignite_odds");
+                ? 0 : SqlManager.getInt("blocks", block, "ignite_odds");
     }
 }

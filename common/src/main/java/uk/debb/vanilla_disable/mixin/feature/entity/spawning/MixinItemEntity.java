@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ItemEntity.class)
 public abstract class MixinItemEntity {
@@ -26,7 +26,7 @@ public abstract class MixinItemEntity {
     @Inject(method = "tick", at = @At("HEAD"))
     private void vanillaDisable$tick(CallbackInfo ci) {
         Entity entity = (Entity) (Object) this;
-        if (this.age >= DataHandler.getCachedInt("entities", "minecraft:item", "despawn_time") && !entity.level().isClientSide()) {
+        if (this.age >= SqlManager.getInt("entities", "minecraft:item", "despawn_time") && !entity.level().isClientSide()) {
             entity.discard();
         }
     }
@@ -41,7 +41,7 @@ public abstract class MixinItemEntity {
             cancellable = true
     )
     private void vanillaDisable$discard(CallbackInfo ci) {
-        if (this.pickupDelay != Short.MAX_VALUE && this.age < DataHandler.getCachedInt("entities", "minecraft:item", "despawn_time")) {
+        if (this.pickupDelay != Short.MAX_VALUE && this.age < SqlManager.getInt("entities", "minecraft:item", "despawn_time")) {
             ci.cancel();
         }
     }

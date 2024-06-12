@@ -22,7 +22,8 @@ import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin({AbstractHorse.class, Armadillo.class, Axolotl.class, Bee.class, Camel.class, Cat.class, Chicken.class, Cow.class,
         Fox.class, Frog.class, Goat.class, Hoglin.class, Llama.class, Ocelot.class, Panda.class, Parrot.class, Pig.class,
@@ -30,9 +31,9 @@ import uk.debb.vanilla_disable.config.data.DataHandler;
 public abstract class MultipleMixinFood {
     @ModifyReturnValue(method = "isFood", at = @At("RETURN"))
     private boolean vanillaDisable$isFood(boolean original, ItemStack stack) {
-        if (DataHandler.isConnectionNull()) return original;
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
-        String item = "can_breed_with_" + DataHandler.lightCleanup(DataHandler.getKeyFromItemRegistry(stack.getItem()));
-        return DataHandler.getCachedBoolean("entities", entity, item);
+        if (SqlManager.isConnectionNull()) return original;
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
+        String item = "can_breed_with_" + DataUtils.lightCleanup(DataUtils.getKeyFromItemRegistry(stack.getItem()));
+        return SqlManager.getBoolean("entities", entity, item);
     }
 }

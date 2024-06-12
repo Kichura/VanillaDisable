@@ -12,7 +12,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.material.LavaFluid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(LavaFluid.class)
 public abstract class MixinLavaFluid {
@@ -20,9 +20,9 @@ public abstract class MixinLavaFluid {
     private int vanillaDisable$getDropOff(int original, LevelReader level) {
         if (level instanceof Level) {
             if (level.dimensionType().ultraWarm()) {
-                return DataHandler.getCachedBoolean("blocks", "minecraft:lava", "fluid_reaches_far_in_nether") ? 1 : 2;
+                return SqlManager.getBoolean("blocks", "minecraft:lava", "fluid_reaches_far_in_nether") ? 1 : 2;
             } else {
-                return DataHandler.getCachedBoolean("blocks", "minecraft:lava", "fluid_reaches_far") ? 1 : 2;
+                return SqlManager.getBoolean("blocks", "minecraft:lava", "fluid_reaches_far") ? 1 : 2;
             }
         }
         return original;
@@ -32,9 +32,9 @@ public abstract class MixinLavaFluid {
     private int vanillaDisable$getTickDelay(int original, LevelReader level) {
         if (level instanceof Level) {
             if (level.dimensionType().ultraWarm()) {
-                return DataHandler.getCachedInt("blocks", "minecraft:lava", "fluid_speed_in_nether");
+                return SqlManager.getInt("blocks", "minecraft:lava", "fluid_speed_in_nether");
             } else {
-                return DataHandler.getCachedInt("blocks", "minecraft:lava", "fluid_speed");
+                return SqlManager.getInt("blocks", "minecraft:lava", "fluid_speed");
             }
         }
         return original;

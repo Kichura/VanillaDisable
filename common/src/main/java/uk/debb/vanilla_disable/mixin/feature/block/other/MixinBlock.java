@@ -21,7 +21,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Block.class)
 public abstract class MixinBlock {
@@ -30,29 +31,29 @@ public abstract class MixinBlock {
 
     @ModifyReturnValue(method = "getFriction", at = @At("RETURN"))
     private float vanillaDisable$getFriction(float original) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(this.asBlock());
-        return (float) DataHandler.getCachedDouble("blocks", block, "friction_factor");
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(this.asBlock());
+        return (float) SqlManager.getDouble("blocks", block, "friction_factor");
     }
 
     @ModifyReturnValue(method = "getSpeedFactor", at = @At("RETURN"))
     private float vanillaDisable$getSpeedFactor(float original) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(this.asBlock());
-        return (float) DataHandler.getCachedDouble("blocks", block, "speed_factor");
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(this.asBlock());
+        return (float) SqlManager.getDouble("blocks", block, "speed_factor");
     }
 
     @ModifyReturnValue(method = "getJumpFactor", at = @At("RETURN"))
     private float vanillaDisable$getJumpFactor(float original) {
-        if (DataHandler.isConnectionNull()) return original;
-        String block = DataHandler.getKeyFromBlockRegistry(this.asBlock());
-        return (float) DataHandler.getCachedDouble("blocks", block, "jump_factor");
+        if (SqlManager.isConnectionNull()) return original;
+        String block = DataUtils.getKeyFromBlockRegistry(this.asBlock());
+        return (float) SqlManager.getDouble("blocks", block, "jump_factor");
     }
 
 
     @Inject(method = "playerDestroy", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$playerDestroy(Level level, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack tool, CallbackInfo ci) {
-        if (state.is(Blocks.TNT) && DataHandler.getCachedBoolean("blocks", "minecraft:tnt", "alpha_behaviour")) {
+        if (state.is(Blocks.TNT) && SqlManager.getBoolean("blocks", "minecraft:tnt", "alpha_behaviour")) {
             TntBlock.explode(level, pos);
             ci.cancel();
         }

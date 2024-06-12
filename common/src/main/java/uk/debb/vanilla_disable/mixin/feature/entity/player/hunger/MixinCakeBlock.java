@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(CakeBlock.class)
 public abstract class MixinCakeBlock {
@@ -28,8 +28,8 @@ public abstract class MixinCakeBlock {
             )
     )
     private static void vanillaDisable$eat(LevelAccessor level, BlockPos pos, BlockState state, Player player, CallbackInfoReturnable<InteractionResult> cir) {
-        if (DataHandler.getCachedBoolean("entities", "minecraft:player", "beta_hunger")) {
-            int nutrition = DataHandler.getCachedInt("items", "minecraft:cake", "nutrition");
+        if (SqlManager.getBoolean("entities", "minecraft:player", "beta_hunger")) {
+            int nutrition = SqlManager.getInt("items", "minecraft:cake", "nutrition");
             player.setHealth(player.getHealth() + nutrition);
         }
     }

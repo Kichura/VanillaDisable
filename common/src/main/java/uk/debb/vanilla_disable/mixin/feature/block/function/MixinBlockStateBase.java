@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class MixinBlockStateBase {
@@ -23,16 +24,16 @@ public abstract class MixinBlockStateBase {
 
     @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$entityInside(CallbackInfo ci) {
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "works")) {
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "works")) {
             ci.cancel();
         }
     }
 
     @ModifyReturnValue(method = "getSignal", at = @At("RETURN"))
     private int vanillaDisable$getSignal(int original) {
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "works")) {
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "works")) {
             return 0;
         }
         return original;
@@ -40,8 +41,8 @@ public abstract class MixinBlockStateBase {
 
     @ModifyReturnValue(method = "getDirectSignal", at = @At("RETURN"))
     private int vanillaDisable$getDirectSignal(int original) {
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "works")) {
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "works")) {
             return 0;
         }
         return original;
@@ -49,8 +50,8 @@ public abstract class MixinBlockStateBase {
 
     @ModifyReturnValue(method = "getAnalogOutputSignal", at = @At("RETURN"))
     private int vanillaDisable$getAnalogOutputSignal(int original) {
-        String block = DataHandler.getKeyFromBlockRegistry(this.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", block, "works")) {
+        String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
+        if (!SqlManager.getBoolean("blocks", block, "works")) {
             return 0;
         }
         return original;

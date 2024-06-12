@@ -17,7 +17,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Player.class)
 public abstract class MixinPlayer {
@@ -26,9 +27,9 @@ public abstract class MixinPlayer {
 
     @Inject(method = "eat", at = @At("HEAD"))
     private void vanillaDisable$eat(Level level, ItemStack itemStack, FoodProperties foodProperties, CallbackInfoReturnable<ItemStack> cir) {
-        String name = DataHandler.getKeyFromItemRegistry(itemStack.getItem());
-        int nutrition = DataHandler.getCachedInt("items", name, "nutrition");
-        float saturation = (float) DataHandler.getCachedDouble("items", name, "saturation");
+        String name = DataUtils.getKeyFromItemRegistry(itemStack.getItem());
+        int nutrition = SqlManager.getInt("items", name, "nutrition");
+        float saturation = (float) SqlManager.getDouble("items", name, "saturation");
         this.getFoodData().eat(nutrition, saturation);
     }
 

@@ -15,17 +15,18 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(EnchantmentHelper.class)
 public abstract class MixinEnchantmentHelper {
     @ModifyReturnValue(method = "getItemEnchantmentLevel", at = @At("RETURN"))
     private static int vanillaDisable$getItemEnchantmentLevel(int original, Holder<Enchantment> holder, ItemStack itemStack) {
-        String item = "can_enchant_" + DataHandler.lightCleanup(DataHandler.getKeyFromItemRegistry(itemStack.getItem()));
-        if (!DataHandler.getCachedBoolean("enchantments", DataHandler.getKeyFromEnchantmentRegistry(holder.value()), item)) {
+        String item = "can_enchant_" + DataUtils.lightCleanup(DataUtils.getKeyFromItemRegistry(itemStack.getItem()));
+        if (!SqlManager.getBoolean("enchantments", DataUtils.getKeyFromEnchantmentRegistry(holder.value()), item)) {
             ItemEnchantments itemEnchantments = itemStack.getEnchantments();
             itemEnchantments.enchantments = itemEnchantments.enchantments.object2IntEntrySet().stream()
-                    .filter(e -> DataHandler.getCachedBoolean("enchantments", DataHandler.getKeyFromEnchantmentRegistry(e.getKey().value()), item))
+                    .filter(e -> SqlManager.getBoolean("enchantments", DataUtils.getKeyFromEnchantmentRegistry(e.getKey().value()), item))
                     .collect(Object2IntOpenHashMap::new, (m, e) -> m.put(e.getKey(), e.getIntValue()), Object2IntOpenHashMap::putAll);
             EnchantmentHelper.setEnchantments(itemStack, itemEnchantments);
             return 0;

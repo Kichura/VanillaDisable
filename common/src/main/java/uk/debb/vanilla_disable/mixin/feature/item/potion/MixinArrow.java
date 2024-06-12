@@ -14,7 +14,9 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -26,8 +28,8 @@ public abstract class MixinArrow {
         if (((Arrow) (Object) this).getPickupItemStackOrigin().is(Items.TIPPED_ARROW)) {
             Optional<Holder<Potion>> optionalPotionHolder = original.potion();
             if (optionalPotionHolder.isPresent()) {
-                String potion = Objects.requireNonNull(DataHandler.potionRegistry.getKey(optionalPotionHolder.get().value())) + "_effect";
-                if (!DataHandler.getCachedBoolean("items", "minecraft:tipped_arrow", DataHandler.lightCleanup(potion))) {
+                String potion = Objects.requireNonNull(DataDefinitions.potionRegistry.getKey(optionalPotionHolder.get().value())) + "_effect";
+                if (!SqlManager.getBoolean("items", "minecraft:tipped_arrow", DataUtils.lightCleanup(potion))) {
                     return PotionContents.EMPTY;
                 }
             }

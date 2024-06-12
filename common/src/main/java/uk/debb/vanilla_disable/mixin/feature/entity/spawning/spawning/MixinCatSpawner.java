@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.CatSpawner;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(CatSpawner.class)
 public abstract class MixinCatSpawner {
@@ -23,6 +23,6 @@ public abstract class MixinCatSpawner {
             )
     )
     private Entity vanillaDisable$create(Entity original) {
-        return DataHandler.getCachedBoolean("entities", "minecraft:cat", "spawned_by_villagers") ? original : null;
+        return SqlManager.getBoolean("entities", "minecraft:cat", "spawned_by_villagers") ? original : null;
     }
 }

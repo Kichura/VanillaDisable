@@ -14,7 +14,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.Objects;
 
@@ -29,10 +31,10 @@ public abstract class MixinVillagerData {
 
     @ModifyReturnValue(method = "getType", at = @At("RETURN"))
     private VillagerType vanillaDisable$getType(VillagerType original) {
-        if (DataHandler.isConnectionNull()) return original;
-        if (DataHandler.villagerTypeRegistry.getKey(this.type) == null) return original;
-        if (!DataHandler.getCachedBoolean("entities", "minecraft:villager",
-                DataHandler.lightCleanup(Objects.requireNonNull(DataHandler.villagerTypeRegistry.getKey(this.type))) + "_type")) {
+        if (SqlManager.isConnectionNull()) return original;
+        if (DataDefinitions.villagerTypeRegistry.getKey(this.type) == null) return original;
+        if (!SqlManager.getBoolean("entities", "minecraft:villager",
+                DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.villagerTypeRegistry.getKey(this.type))) + "_type")) {
             return VillagerType.PLAINS;
         }
         return original;
@@ -40,10 +42,10 @@ public abstract class MixinVillagerData {
 
     @ModifyReturnValue(method = "getProfession", at = @At("RETURN"))
     private VillagerProfession vanillaDisable$getProfession(VillagerProfession original) {
-        if (DataHandler.isConnectionNull()) return original;
-        if (DataHandler.villagerProfessionRegistry.getKey(this.profession) == null) return original;
-        if (!DataHandler.getCachedBoolean("entities", "minecraft:villager",
-                DataHandler.lightCleanup(Objects.requireNonNull(DataHandler.villagerProfessionRegistry.getKey(this.profession))) + "_profession")) {
+        if (SqlManager.isConnectionNull()) return original;
+        if (DataDefinitions.villagerProfessionRegistry.getKey(this.profession) == null) return original;
+        if (!SqlManager.getBoolean("entities", "minecraft:villager",
+                DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.villagerProfessionRegistry.getKey(this.profession))) + "_profession")) {
             return VillagerProfession.NONE;
         }
         return original;

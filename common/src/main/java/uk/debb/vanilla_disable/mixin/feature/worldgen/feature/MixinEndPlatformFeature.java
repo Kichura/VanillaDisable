@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(EndPlatformFeature.class)
 public abstract class MixinEndPlatformFeature {
     @Inject(method = "createEndPlatform", at = @At("HEAD"), cancellable = true)
     private static void vanillaDisable$createEndPlatform(ServerLevelAccessor serverLevelAccessor, BlockPos blockPos, boolean bl, CallbackInfo ci) {
-        if (!DataHandler.getCachedBoolean("placed_features", "minecraft:end_platform", "enabled")) {
+        if (!SqlManager.getBoolean("placed_features", "minecraft:end_platform", "enabled")) {
             ci.cancel();
         }
     }

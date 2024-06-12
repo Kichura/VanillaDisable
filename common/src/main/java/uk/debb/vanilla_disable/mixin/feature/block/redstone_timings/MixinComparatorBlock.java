@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.ComparatorBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ComparatorBlock.class)
 public abstract class MixinComparatorBlock {
@@ -22,6 +22,6 @@ public abstract class MixinComparatorBlock {
             )
     )
     private int vanillaDisable$scheduleTick(int delay) {
-        return DataHandler.getCachedInt("blocks", "minecraft:comparator", "redstone_delay");
+        return SqlManager.getInt("blocks", "minecraft:comparator", "redstone_delay");
     }
 }

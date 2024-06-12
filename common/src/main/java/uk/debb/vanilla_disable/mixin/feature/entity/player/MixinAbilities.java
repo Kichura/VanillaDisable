@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Abilities;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Abilities.class)
 public abstract class MixinAbilities {
@@ -20,6 +20,6 @@ public abstract class MixinAbilities {
 
     @ModifyReturnValue(method = "getFlyingSpeed", at = @At("RETURN"))
     private float vanillaDisable$getFlyingSpeed(float original) {
-        return (float) DataHandler.getCachedDouble("entities", "minecraft:player", "flying_speed") / 0.05F * this.flyingSpeed;
+        return (float) SqlManager.getDouble("entities", "minecraft:player", "flying_speed") / 0.05F * this.flyingSpeed;
     }
 }

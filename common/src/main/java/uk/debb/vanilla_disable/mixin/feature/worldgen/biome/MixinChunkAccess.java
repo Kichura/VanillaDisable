@@ -12,12 +12,12 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
 
 @Mixin(ChunkAccess.class)
 public abstract class MixinChunkAccess {
     @ModifyReturnValue(method = "getNoiseBiome", at = @At("RETURN"))
     private Holder<Biome> vanillaDisable$getNoiseBiome(Holder<Biome> original) {
-        return DataHandler.getBiome(original);
+        return DataUtils.getBiome(original);
     }
 }

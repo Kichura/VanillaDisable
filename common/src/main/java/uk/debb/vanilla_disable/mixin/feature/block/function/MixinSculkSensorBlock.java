@@ -12,14 +12,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(SculkSensorBlock.class)
 public abstract class MixinSculkSensorBlock {
     @Inject(method = "canActivate", at = @At("HEAD"), cancellable = true)
     private static void vanillaDisable$canActivate(BlockState state, CallbackInfoReturnable<Boolean> cir) {
-        String type = DataHandler.getKeyFromBlockRegistry(state.getBlock());
-        if (!DataHandler.getCachedBoolean("blocks", type, "works")) {
+        String type = DataUtils.getKeyFromBlockRegistry(state.getBlock());
+        if (!SqlManager.getBoolean("blocks", type, "works")) {
             cir.setReturnValue(false);
         }
     }

@@ -14,14 +14,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(DispenserBlock.class)
 public abstract class MixinDispenserBlock {
     @ModifyReturnValue(method = "getDispenseMethod", at = @At("RETURN"))
     private DispenseItemBehavior vanillaDisable$getDispenseMethod(DispenseItemBehavior original, Level level, ItemStack stack) {
-        String name = DataHandler.getKeyFromItemRegistry(stack.getItem());
-        if (!DataHandler.getCachedBoolean("items", name, "dispenser_interaction")) {
+        String name = DataUtils.getKeyFromItemRegistry(stack.getItem());
+        if (!SqlManager.getBoolean("items", name, "dispenser_interaction")) {
             return new DefaultDispenseItemBehavior();
         }
         return original;

@@ -11,7 +11,8 @@ import net.minecraft.world.item.Item;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Item.class)
 public abstract class MixinItem {
@@ -20,7 +21,7 @@ public abstract class MixinItem {
 
     @ModifyReturnValue(method = "canAttackBlock", at = @At("RETURN"))
     private boolean vanillaDisable$canAttackBlock(boolean original) {
-        String name = DataHandler.getKeyFromItemRegistry(this.asItem());
-        return DataHandler.getCachedBoolean("items", name, "can_break_blocks_in_creative");
+        String name = DataUtils.getKeyFromItemRegistry(this.asItem());
+        return SqlManager.getBoolean("items", name, "can_break_blocks_in_creative");
     }
 }

@@ -12,7 +12,7 @@ import net.minecraft.world.entity.projectile.ThrownExperienceBottle;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ThrownExperienceBottle.class)
 public abstract class MixinThrownExperienceBottle {
@@ -24,6 +24,6 @@ public abstract class MixinThrownExperienceBottle {
             )
     )
     private boolean vanillaDisable$award(ServerLevel level, Vec3 pos, int amount) {
-        return DataHandler.getCachedBoolean("entities", "minecraft:experience_bottle", "can_drop_xp");
+        return SqlManager.getBoolean("entities", "minecraft:experience_bottle", "can_drop_xp");
     }
 }

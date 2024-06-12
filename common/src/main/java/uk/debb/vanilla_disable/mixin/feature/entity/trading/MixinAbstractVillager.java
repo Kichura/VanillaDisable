@@ -14,7 +14,8 @@ import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(AbstractVillager.class)
 public abstract class MixinAbstractVillager {
@@ -27,8 +28,8 @@ public abstract class MixinAbstractVillager {
             require = 0
     )
     private MerchantOffer vanillaDisable$increaseUses(MerchantOffer receiver) {
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
-        if (DataHandler.getCachedBoolean("entities", entity, "can_infinitely_trade")) {
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
+        if (SqlManager.getBoolean("entities", entity, "can_infinitely_trade")) {
             receiver.resetUses();
         }
         return receiver;
@@ -36,9 +37,9 @@ public abstract class MixinAbstractVillager {
 
     @ModifyReturnValue(method = "getOffers", at = @At("RETURN"))
     private MerchantOffers vanillaDisable$getOffers(MerchantOffers original) {
-        if (DataHandler.isConnectionNull()) return original;
-        String entity = DataHandler.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
-        if (!DataHandler.getCachedBoolean("entities", entity, "can_trade")) {
+        if (SqlManager.isConnectionNull()) return original;
+        String entity = DataUtils.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
+        if (!SqlManager.getBoolean("entities", entity, "can_trade")) {
             return new MerchantOffers();
         }
         return original;

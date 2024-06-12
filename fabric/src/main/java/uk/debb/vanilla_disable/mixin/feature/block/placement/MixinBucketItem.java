@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(BucketItem.class)
 public abstract class MixinBucketItem {
@@ -31,7 +31,7 @@ public abstract class MixinBucketItem {
     )
     private boolean vanillaDisable$ultraWarm(boolean original) {
         if (original && this.content.equals(Fluids.WATER)) {
-            return !DataHandler.getCachedBoolean("blocks", "minecraft:water", "can_place_in_nether");
+            return !SqlManager.getBoolean("blocks", "minecraft:water", "can_place_in_nether");
         }
         return original;
     }

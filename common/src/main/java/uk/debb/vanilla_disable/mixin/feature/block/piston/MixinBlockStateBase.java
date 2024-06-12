@@ -14,7 +14,8 @@ import net.minecraft.world.level.material.PushReaction;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataUtils;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class MixinBlockStateBase {
@@ -24,15 +25,15 @@ public abstract class MixinBlockStateBase {
     @ModifyReturnValue(method = "getPistonPushReaction", at = @At("RETURN"))
     private PushReaction vanillaDisable$getPistonPushReaction(PushReaction original) {
         Block block = this.getBlock();
-        if (DataHandler.isConnectionNull()) {
+        if (SqlManager.isConnectionNull()) {
             if (block.equals(Blocks.OBSIDIAN) || block.equals(Blocks.CRYING_OBSIDIAN) || block.equals(Blocks.RESPAWN_ANCHOR) ||
                     block.equals(Blocks.REINFORCED_DEEPSLATE)) {
                 return PushReaction.BLOCK;
             }
             return original;
         }
-        String name = DataHandler.getKeyFromBlockRegistry(block);
-        String reaction = DataHandler.getCachedString("blocks", name, "push_behaviour");
+        String name = DataUtils.getKeyFromBlockRegistry(block);
+        String reaction = SqlManager.getString("blocks", name, "push_behaviour");
         if (reaction == null) return block.defaultBlockState().pushReaction;
         return PushReaction.valueOf(reaction);
     }

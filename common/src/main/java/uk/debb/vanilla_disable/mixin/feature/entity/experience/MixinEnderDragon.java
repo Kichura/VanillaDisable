@@ -12,7 +12,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(EnderDragon.class)
 public abstract class MixinEnderDragon {
@@ -24,6 +24,6 @@ public abstract class MixinEnderDragon {
             )
     )
     private boolean vanillaDisable$award(ServerLevel level, Vec3 pos, int amount) {
-        return DataHandler.getCachedBoolean("entities", "minecraft:ender_dragon", "can_drop_xp");
+        return SqlManager.getBoolean("entities", "minecraft:ender_dragon", "can_drop_xp");
     }
 }

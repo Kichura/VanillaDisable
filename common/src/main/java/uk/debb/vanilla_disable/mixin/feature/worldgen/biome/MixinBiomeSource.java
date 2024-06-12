@@ -11,9 +11,11 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.Biomes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,15 +24,18 @@ import java.util.Set;
 public abstract class MixinBiomeSource {
     @ModifyReturnValue(method = "possibleBiomes", at = @At("RETURN"))
     private Set<Holder<Biome>> vanillaDisable$possibleBiomes(Set<Holder<Biome>> original) {
-        if (DataHandler.biomeRegistry == null || DataHandler.server == null) return original;
+        if (DataDefinitions.biomeRegistry == null || DataDefinitions.server == null) return original;
         Set<Holder<Biome>> set = new HashSet<>(original);
         for (Holder<Biome> biomeHolder : original) {
-            ResourceLocation resourceLocation = DataHandler.biomeRegistry.getKey(biomeHolder.value());
+            ResourceLocation resourceLocation = DataDefinitions.biomeRegistry.getKey(biomeHolder.value());
             if (resourceLocation == null) continue;
-            if (!DataHandler.biomeMap.isEmpty() && !DataHandler.biomeMap.getOrDefault(resourceLocation.toString(), true)) {
+            if (resourceLocation.equals(Biomes.PLAINS.location())) continue;
+            if (resourceLocation.equals(Biomes.NETHER_WASTES.location())) continue;
+            if (resourceLocation.equals(Biomes.THE_END.location())) continue;
+            if (!SqlManager.biomeMap.isEmpty() && !SqlManager.biomeMap.getOrDefault(resourceLocation.toString(), true)) {
                 set.remove(biomeHolder);
             }
-            if (DataHandler.populationDone && !DataHandler.getCachedBoolean("biomes", resourceLocation.toString(), "enabled")) {
+            if (DataDefinitions.populationDone && !SqlManager.getBoolean("biomes", resourceLocation.toString(), "enabled")) {
                 set.remove(biomeHolder);
             }
         }

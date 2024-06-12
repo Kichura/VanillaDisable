@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(CakeBlock.class)
 public abstract class MixinCakeBlock {
@@ -23,8 +23,8 @@ public abstract class MixinCakeBlock {
             )
     )
     private static void vanillaDisable$eat(Args args) {
-        int nutrition = DataHandler.getCachedInt("items", "minecraft:cake", "nutrition");
-        float saturation = (float) DataHandler.getCachedDouble("items", "minecraft:cake", "saturation");
+        int nutrition = SqlManager.getInt("items", "minecraft:cake", "nutrition");
+        float saturation = (float) SqlManager.getDouble("items", "minecraft:cake", "saturation");
         args.set(0, nutrition);
         args.set(1, saturation);
     }

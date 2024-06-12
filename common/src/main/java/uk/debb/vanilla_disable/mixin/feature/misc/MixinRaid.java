@@ -11,18 +11,19 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.raid.Raid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.DataDefinitions;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Raid.class)
 public abstract class MixinRaid {
     @ModifyReturnValue(method = "getNumGroups", at = @At("RETURN"))
     private int vanillaDisable$getNumGroups(int original, Difficulty difficulty) {
-        if (DataHandler.server == null) return original;
+        if (DataDefinitions.server == null) return original;
         return switch (difficulty) {
             case PEACEFUL -> 0;
-            case EASY -> DataHandler.getCachedInt("misc", "raid_waves_easy", "raid_waves") - 1;
-            case NORMAL -> DataHandler.getCachedInt("misc", "raid_waves_normal", "raid_waves") - 1;
-            case HARD -> DataHandler.getCachedInt("misc", "raid_waves_hard", "raid_waves") - 1;
+            case EASY -> SqlManager.getInt("misc", "raid_waves_easy", "raid_waves") - 1;
+            case NORMAL -> SqlManager.getInt("misc", "raid_waves_normal", "raid_waves") - 1;
+            case HARD -> SqlManager.getInt("misc", "raid_waves_hard", "raid_waves") - 1;
         };
     }
 }

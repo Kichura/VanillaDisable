@@ -10,7 +10,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.world.level.block.EnderChestBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import uk.debb.vanilla_disable.config.data.DataHandler;
+import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(EnderChestBlock.class)
 public abstract class MixinEnderChestBlock {
@@ -23,6 +23,6 @@ public abstract class MixinEnderChestBlock {
             require = 0
     )
     private boolean vanillaDisable$isRedstoneConductor(boolean original) {
-        return original && DataHandler.getCachedBoolean("blocks", "minecraft:ender_chest", "opening_blockable");
+        return original && SqlManager.getBoolean("blocks", "minecraft:ender_chest", "opening_blockable");
     }
 }

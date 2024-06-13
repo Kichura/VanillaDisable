@@ -259,7 +259,11 @@ public class SqlManager {
             return memo.get(cacheKey);
         }
         Object value = getValue(table, row, column, dataType);
-        memo.put(cacheKey, value);
+        try {
+            memo.put(cacheKey, value);
+        } catch (IndexOutOfBoundsException ignored) {
+            memo.put(cacheKey, value);
+        }
         return value;
     }
 

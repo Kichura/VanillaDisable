@@ -8,6 +8,7 @@ package uk.debb.vanilla_disable.data.command;
 
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.cauldron.CauldronInteraction;
@@ -563,6 +564,10 @@ public class CommandDataHandler {
                             put("nutrition", String.valueOf(foodProperties.nutrition()));
                             put("saturation", String.valueOf(foodProperties.saturation()));
                         }
+                        if (item.equals(Items.CAKE)) {
+                            put("nutrition", "2");
+                            put("saturation", "0.1");
+                        }
 
                         if (item.equals(Items.POTION) || item.equals(Items.SPLASH_POTION) ||
                                 item.equals(Items.LINGERING_POTION) || item.equals(Items.TIPPED_ARROW)) {
@@ -605,7 +610,7 @@ public class CommandDataHandler {
                     enchantmentRegistry.forEach(enchantment1 -> {
                         if (enchantment1.equals(enchantment)) return;
                         put("compatible_with_" + lightCleanup(Objects.requireNonNull(enchantmentRegistry.getKey(enchantment1))),
-                                String.valueOf(enchantment.isCompatibleWith(enchantment1) && enchantment1.isCompatibleWith(enchantment)));
+                                String.valueOf(Enchantment.areCompatible(new Holder.Direct<>(enchantment), new Holder.Direct<>(enchantment1))));
                     });
                 }}));
 
@@ -1279,7 +1284,7 @@ public class CommandDataHandler {
                     String columnName = resultSetMetaData.getColumnName(i);
                     if (columnName.startsWith("can_breed_with_")) {
                         if (resultSet.getBoolean(columnName)) {
-                            items.add(Objects.requireNonNull(itemRegistry.get(ResourceLocation.of(
+                            items.add(Objects.requireNonNull(itemRegistry.get(ResourceLocation.bySeparator(
                                     columnName.replace("can_breed_with_", "minecraft:"), ':'))));
                         }
                     }

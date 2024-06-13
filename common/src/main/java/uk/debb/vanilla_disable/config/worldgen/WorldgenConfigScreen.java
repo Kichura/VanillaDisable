@@ -26,7 +26,6 @@ import java.util.*;
 
 public class WorldgenConfigScreen extends Screen {
     private final CreateWorldScreen lastScreen;
-    private final String[] extraPlacedFeatures = {"obsidian_platform", "end_spike_cage"};
     private Set<ResourceLocation> biomes;
     private Set<ResourceLocation> structures;
     private Set<ResourceLocation> placedFeatures;
@@ -59,14 +58,14 @@ public class WorldgenConfigScreen extends Screen {
             this.biomes.forEach(biome -> WorldgenDataHandler.biomeMap.put(WorldgenDataHandler.cleanup(biome), true));
             this.structures.forEach(structure -> WorldgenDataHandler.structureMap.put(WorldgenDataHandler.cleanup(structure), true));
             this.placedFeatures.forEach(placedFeature -> WorldgenDataHandler.placedFeatureMap.put(WorldgenDataHandler.cleanup(placedFeature), true));
-            Arrays.stream(extraPlacedFeatures).forEach(placedFeature -> WorldgenDataHandler.placedFeatureMap.put(placedFeature, true));
+            WorldgenDataHandler.placedFeatureMap.put("end_spike_cage", true);
             worldgenConfigList.refreshEntries();
         }).width(80).build();
         Button disableButton = Button.builder(Component.translatable("vd.worldgen_config.disable_all"), (button) -> {
             this.biomes.forEach(biome -> WorldgenDataHandler.biomeMap.put(WorldgenDataHandler.cleanup(biome), false));
             this.structures.forEach(structure -> WorldgenDataHandler.structureMap.put(WorldgenDataHandler.cleanup(structure), false));
             this.placedFeatures.forEach(placedFeature -> WorldgenDataHandler.placedFeatureMap.put(WorldgenDataHandler.cleanup(placedFeature), false));
-            Arrays.stream(extraPlacedFeatures).forEach(placedFeature -> WorldgenDataHandler.placedFeatureMap.put(placedFeature, false));
+            WorldgenDataHandler.placedFeatureMap.put("end_spike_cage", false);
             worldgenConfigList.refreshEntries();
         }).width(80).build();
         Button doneButton = Button.builder(Component.translatable("vd.worldgen_config.done"), (button) -> {
@@ -133,7 +132,7 @@ public class WorldgenConfigScreen extends Screen {
                     case PLACED_FEATURE -> {
                         boolean val = Collections.frequency(WorldgenDataHandler.placedFeatureMap.values(), false) < WorldgenConfigScreen.this.placedFeatures.size() / 2;
                         WorldgenConfigScreen.this.placedFeatures.forEach(placedFeature -> WorldgenDataHandler.placedFeatureMap.put(WorldgenDataHandler.cleanup(placedFeature), !val));
-                        Arrays.stream(extraPlacedFeatures).forEach(placedFeature -> WorldgenDataHandler.placedFeatureMap.put(placedFeature, !val));
+                        WorldgenDataHandler.placedFeatureMap.put("end_spike_cage", !val);
                     }
                 }
                 list.refreshEntries();
@@ -203,12 +202,9 @@ public class WorldgenConfigScreen extends Screen {
                     this.addEntry(new WorldgenConfigToggleEntry(placedFeature.toString(), WorldgenConfigType.PLACED_FEATURE));
                 }
             });
-            Arrays.stream(extraPlacedFeatures).sorted().forEach(placedFeature -> {
-                String adjustedPlacedFeature = "minecraft_unofficial:" + placedFeature;
-                if (adjustedPlacedFeature.contains(WorldgenConfigScreen.this.search)) {
-                    this.addEntry(new WorldgenConfigToggleEntry(adjustedPlacedFeature, WorldgenConfigType.PLACED_FEATURE));
-                }
-            });
+            if ("minecraft_unofficial:end_spike_cage".contains(WorldgenConfigScreen.this.search)) {
+                this.addEntry(new WorldgenConfigToggleEntry("minecraft_unofficial:end_spike_cage", WorldgenConfigType.PLACED_FEATURE));
+            }
         }
 
         public void refreshEntries() {

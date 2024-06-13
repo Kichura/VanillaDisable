@@ -158,8 +158,7 @@ public class WorldgenDataHandler {
             String clean = cleanup(placedFeature);
             properties.put("placed_features." + clean, placedFeatureMap.getOrDefault(clean, true));
         });
-        ImmutableList.of("obsidian_platform", "end_spike_cage").forEach(placedFeature ->
-                properties.put("placed_features." + placedFeature, placedFeatureMap.getOrDefault(placedFeature, true)));
+        properties.put("placed_features.end_spike_cage", placedFeatureMap.getOrDefault("end_spike_cage", true));
 
         if (write) {
             try {

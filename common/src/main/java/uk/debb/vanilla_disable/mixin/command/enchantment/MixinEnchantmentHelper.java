@@ -4,10 +4,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-package uk.debb.vanilla_disable.mixin.command.enchantment.item;
+package uk.debb.vanilla_disable.mixin.command.enchantment;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -19,14 +20,14 @@ import uk.debb.vanilla_disable.data.command.CommandDataHandler;
 @Mixin(EnchantmentHelper.class)
 public abstract class MixinEnchantmentHelper {
     @ModifyReturnValue(method = "getItemEnchantmentLevel", at = @At("RETURN"))
-    private static int vanillaDisable$getItemEnchantmentLevel(int original, Enchantment enchantment, ItemStack stack) {
-        String item = "can_enchant_" + CommandDataHandler.lightCleanup(CommandDataHandler.getKeyFromItemRegistry(stack.getItem()));
-        if (!CommandDataHandler.getCachedBoolean("enchantments", CommandDataHandler.getKeyFromEnchantmentRegistry(enchantment), item)) {
-            ItemEnchantments itemEnchantments = stack.getEnchantments();
+    private static int vanillaDisable$getItemEnchantmentLevel(int original, Holder<Enchantment> holder, ItemStack itemStack) {
+        String item = "can_enchant_" + CommandDataHandler.lightCleanup(CommandDataHandler.getKeyFromItemRegistry(itemStack.getItem()));
+        if (!CommandDataHandler.getCachedBoolean("enchantments", CommandDataHandler.getKeyFromEnchantmentRegistry(holder.value()), item)) {
+            ItemEnchantments itemEnchantments = itemStack.getEnchantments();
             itemEnchantments.enchantments = itemEnchantments.enchantments.object2IntEntrySet().stream()
                     .filter(e -> CommandDataHandler.getCachedBoolean("enchantments", CommandDataHandler.getKeyFromEnchantmentRegistry(e.getKey().value()), item))
                     .collect(Object2IntOpenHashMap::new, (m, e) -> m.put(e.getKey(), e.getIntValue()), Object2IntOpenHashMap::putAll);
-            EnchantmentHelper.setEnchantments(stack, itemEnchantments);
+            EnchantmentHelper.setEnchantments(itemStack, itemEnchantments);
             return 0;
         }
         return original;

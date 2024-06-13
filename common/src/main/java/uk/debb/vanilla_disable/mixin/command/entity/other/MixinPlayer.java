@@ -7,13 +7,15 @@
 package uk.debb.vanilla_disable.mixin.command.entity.other;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,7 +35,9 @@ public abstract class MixinPlayer {
 
     @Inject(method = "attack", at = @At("RETURN"))
     private void vanillaDisable$attack(Entity target, CallbackInfo ci) {
-        if (target instanceof Creeper creeper && EnchantmentHelper.getFireAspect((Player) (Object) this) > 0 &&
+        boolean hasFireAspect = ((Player) (Object) this).getMainHandItem().getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY)
+                .keySet().stream().anyMatch(enchantment -> enchantment.is(Enchantments.FIRE_ASPECT.location()));
+        if (target instanceof Creeper creeper && hasFireAspect &&
                 CommandDataHandler.getCachedBoolean("entities", "minecraft:creeper", "can_be_lit_by_fire_aspect")) {
             creeper.ignite();
         }

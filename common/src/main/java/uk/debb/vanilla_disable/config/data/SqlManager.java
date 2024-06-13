@@ -102,6 +102,8 @@ public class SqlManager {
                 }
             });
 
+            worldgenMaps.forEach((table, map) -> map.clear());
+
             Scanner scanner = new Scanner(new File(PATH));
             while (scanner.hasNext()) {
                 statement.execute(scanner.nextLine());

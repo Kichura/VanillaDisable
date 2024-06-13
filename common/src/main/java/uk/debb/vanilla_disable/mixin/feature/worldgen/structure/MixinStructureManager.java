@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 public abstract class MixinStructureManager {
     @Inject(method = "fillStartsForStructure", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$fillStartsForStructure(Structure structure, LongSet structureRefs, Consumer<StructureStart> startConsumer, CallbackInfo ci) {
-        if (DataDefinitions.structureRegistry == null || DataDefinitions.server == null) return;
+        if (DataDefinitions.structureRegistry == null) return;
         String rule = Objects.requireNonNull(DataDefinitions.structureRegistry.getKey(structure)).toString();
         if (!SqlManager.worldgenMaps.get("structures").isEmpty() && !SqlManager.worldgenMaps.get("structures").getOrDefault(rule, true)) {
             ci.cancel();

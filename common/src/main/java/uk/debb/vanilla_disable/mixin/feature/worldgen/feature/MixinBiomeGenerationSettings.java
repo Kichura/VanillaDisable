@@ -20,7 +20,7 @@ import java.util.Objects;
 public abstract class MixinBiomeGenerationSettings {
     @ModifyReturnValue(method = "hasFeature", at = @At("RETURN"))
     private boolean vanillaDisable$hasFeature(boolean original, PlacedFeature feature) {
-        if (DataDefinitions.placedFeatureRegistry == null || DataDefinitions.server == null) return original;
+        if (DataDefinitions.placedFeatureRegistry == null) return original;
         String rule = Objects.requireNonNull(DataDefinitions.placedFeatureRegistry.getKey(feature)).toString();
         if (!SqlManager.worldgenMaps.get("placed_features").isEmpty() && !SqlManager.worldgenMaps.get("placed_features").getOrDefault(rule, true)) {
             return false;

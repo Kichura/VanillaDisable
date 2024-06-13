@@ -18,7 +18,6 @@ import uk.debb.vanilla_disable.config.data.SqlManager;
 public class MixinServerRecipeBook {
     @Inject(method = "loadRecipes", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$loadRecipes(CallbackInfo ci) {
-        if (DataDefinitions.server == null) return;
         if (!SqlManager.getBoolean("misc", "recipe_book", "enabled")) {
             ci.cancel();
         }
@@ -26,7 +25,6 @@ public class MixinServerRecipeBook {
 
     @Inject(method = "sendRecipes", at = @At("HEAD"), cancellable = true)
     private void vanillaDisable$sendRecipes(CallbackInfo ci) {
-        if (DataDefinitions.server == null) return;
         if (!SqlManager.getBoolean("misc", "recipe_book", "enabled")) {
             ci.cancel();
         }

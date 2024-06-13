@@ -69,6 +69,7 @@ public class DataUtils {
     }
 
     public static Holder<Biome> getDefaultBiome(Holder<Biome> biome) {
+        if (server == null) return biomeRegistry.getHolderOrThrow(Biomes.PLAINS);
         if (hasBiome(Level.NETHER, biome)) {
             return biomeRegistry.getHolderOrThrow(Biomes.NETHER_WASTES);
         } else if (hasBiome(Level.END, biome)) {
@@ -78,7 +79,7 @@ public class DataUtils {
     }
 
     public static Holder<Biome> getBiome(Holder<Biome> original) {
-        if (biomeRegistry == null || server == null) return original;
+        if (biomeRegistry == null) return original;
         ResourceLocation resourceLocation = biomeRegistry.getKey(original.value());
         if (resourceLocation == null) return original;
         if (resourceLocation.equals(Biomes.PLAINS.location())) return original;

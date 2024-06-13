@@ -24,7 +24,7 @@ import java.util.Set;
 public abstract class MixinBiomeSource {
     @ModifyReturnValue(method = "possibleBiomes", at = @At("RETURN"))
     private Set<Holder<Biome>> vanillaDisable$possibleBiomes(Set<Holder<Biome>> original) {
-        if (DataDefinitions.biomeRegistry == null || DataDefinitions.server == null) return original;
+        if (DataDefinitions.biomeRegistry == null) return original;
         Set<Holder<Biome>> set = new HashSet<>(original);
         for (Holder<Biome> biomeHolder : original) {
             ResourceLocation resourceLocation = DataDefinitions.biomeRegistry.getKey(biomeHolder.value());

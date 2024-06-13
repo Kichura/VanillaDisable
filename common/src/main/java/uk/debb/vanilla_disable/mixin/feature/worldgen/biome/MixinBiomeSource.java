@@ -32,7 +32,7 @@ public abstract class MixinBiomeSource {
             if (resourceLocation.equals(Biomes.PLAINS.location())) continue;
             if (resourceLocation.equals(Biomes.NETHER_WASTES.location())) continue;
             if (resourceLocation.equals(Biomes.THE_END.location())) continue;
-            if (!SqlManager.biomeMap.isEmpty() && !SqlManager.biomeMap.getOrDefault(resourceLocation.toString(), true)) {
+            if (!SqlManager.worldgenMaps.get("biomes").isEmpty() && !SqlManager.worldgenMaps.get("biomes").getOrDefault(resourceLocation.toString(), true)) {
                 set.remove(biomeHolder);
             }
             if (DataDefinitions.populationDone && !SqlManager.getBoolean("biomes", resourceLocation.toString(), "enabled")) {

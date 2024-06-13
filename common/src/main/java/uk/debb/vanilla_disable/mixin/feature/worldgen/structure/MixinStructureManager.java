@@ -26,7 +26,7 @@ public abstract class MixinStructureManager {
     private void vanillaDisable$fillStartsForStructure(Structure structure, LongSet structureRefs, Consumer<StructureStart> startConsumer, CallbackInfo ci) {
         if (DataDefinitions.structureRegistry == null || DataDefinitions.server == null) return;
         String rule = Objects.requireNonNull(DataDefinitions.structureRegistry.getKey(structure)).toString();
-        if (!SqlManager.structureMap.isEmpty() && !SqlManager.structureMap.getOrDefault(rule, true)) {
+        if (!SqlManager.worldgenMaps.get("structures").isEmpty() && !SqlManager.worldgenMaps.get("structures").getOrDefault(rule, true)) {
             ci.cancel();
         }
         if (DataDefinitions.populationDone && !SqlManager.getBoolean("structures", rule, "enabled")) {

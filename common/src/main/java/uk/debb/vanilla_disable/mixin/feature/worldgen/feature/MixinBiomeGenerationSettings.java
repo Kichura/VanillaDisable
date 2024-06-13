@@ -22,7 +22,7 @@ public abstract class MixinBiomeGenerationSettings {
     private boolean vanillaDisable$hasFeature(boolean original, PlacedFeature feature) {
         if (DataDefinitions.placedFeatureRegistry == null || DataDefinitions.server == null) return original;
         String rule = Objects.requireNonNull(DataDefinitions.placedFeatureRegistry.getKey(feature)).toString();
-        if (!SqlManager.placedFeatureMap.isEmpty() && !SqlManager.placedFeatureMap.getOrDefault(rule, true)) {
+        if (!SqlManager.worldgenMaps.get("placed_features").isEmpty() && !SqlManager.worldgenMaps.get("placed_features").getOrDefault(rule, true)) {
             return false;
         }
         if (DataDefinitions.populationDone && !SqlManager.getBoolean("placed_features", rule, "enabled")) {

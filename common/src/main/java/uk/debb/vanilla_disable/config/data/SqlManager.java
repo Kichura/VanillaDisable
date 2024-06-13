@@ -26,9 +26,11 @@ import static uk.debb.vanilla_disable.config.data.DataDefinitions.*;
 
 public class SqlManager {
     public static final Properties properties = new Properties();
-    public static final Object2BooleanMap<String> biomeMap = new Object2BooleanOpenHashMap<>();
-    public static final Object2BooleanMap<String> structureMap = new Object2BooleanOpenHashMap<>();
-    public static final Object2BooleanMap<String> placedFeatureMap = new Object2BooleanOpenHashMap<>();
+    public static final Object2ObjectMap<String, Object2BooleanMap<String>> worldgenMaps = new Object2ObjectOpenHashMap<>() {{
+        put("biomes", new Object2BooleanOpenHashMap<>());
+        put("placed_features", new Object2BooleanOpenHashMap<>());
+        put("structures", new Object2BooleanOpenHashMap<>());
+    }};
     public static final Object2ObjectMap<String, ObjectList<String>> legacyGameruleMap = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectMap<String, Object> memo = new Object2ObjectOpenHashMap<>();
     public static File tomlFile;
@@ -88,11 +90,7 @@ public class SqlManager {
                 convertProperties();
             }
 
-            new Object2ObjectOpenHashMap<String, Object2BooleanMap<String>>() {{
-                put("biomes", biomeMap);
-                put("structures", structureMap);
-                put("placed_features", placedFeatureMap);
-            }}.forEach((table, map) -> {
+            worldgenMaps.forEach((table, map) -> {
                 if (map.isEmpty()) return;
                 if (map.values().stream().noneMatch(val -> val)) {
                     writeToFile("UPDATE " + table + " SET \"enabled\" = false;");
@@ -103,10 +101,6 @@ public class SqlManager {
                     });
                 }
             });
-
-            biomeMap.clear();
-            structureMap.clear();
-            placedFeatureMap.clear();
 
             Scanner scanner = new Scanner(new File(PATH));
             while (scanner.hasNext()) {

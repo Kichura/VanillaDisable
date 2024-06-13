@@ -1,5 +1,4 @@
 {
-  "vd.gamerule.category.vanilla_disable": "Vanilla Disable",
   "vd.commandRule.entities.statTypes": "Ativar / Desativar  estatisticas na categoria '%s'",
   "vd.commandRule.entities.customStats": "Ativar / Desativar a estatistica customizada '%s'.",
   "vd.commandRule.entities.damageTypes": "Ativar / Desativar %s dano afetando o jogador.",
@@ -103,6 +102,9 @@
   "vd.command.invalid_value": "Valor invalido.",
   "vd.command.successfully_set_values": "Valores foram definidos para %s com sucesso.",
   "vd.command.successfully_set_all_properties": "Todos os valores das propriedades %s foram definidos para %s com sucesso.",
+  "vd.config.cancel": "Cancelar",
+  "vd.config.done": "Pronto",
+  "vd.config.search": "Procurar",
   "vd.command_config": "VanillaDisable Configuração de Comandos",
   "vd.command_config.tab.entities": "Entidades",
   "vd.command_config.tab.blocks": "Blocos",
@@ -111,13 +113,8 @@
   "vd.command_config.tab.commands": "Comandos",
   "vd.command_config.tab.advancements": "Avanços",
   "vd.command_config.tab.mob_categories": "Categorias de Criaturas",
-  "vd.command_config.search": "Procurar",
-  "vd.command_config.cancel": "Cancelar",
-  "vd.command_config.done": "Pronto",
   "vd.key.open_command_config": "Abrir configuração de comandos",
   "vd.key.category": "VanillaDisable",
   "vd.key.cannot_press": "Você só pode usar essa tela de configuração no singleplayer.",
   "vd.worldgen_config": "VanillaDisable Configurações de Geração de Mundo",
-  "vd.worldgen_config.done": "Pronto",
-  "vd.worldgen_config.search": "Procurar"
 }

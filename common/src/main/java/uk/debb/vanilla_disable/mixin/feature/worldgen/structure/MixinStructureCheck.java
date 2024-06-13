@@ -26,7 +26,7 @@ public abstract class MixinStructureCheck {
     private void vanillaDisable$checkStart(ChunkPos chunkPos, Structure structure, StructurePlacement structurePlacement, boolean bl, CallbackInfoReturnable<StructureCheckResult> cir) {
         if (DataDefinitions.structureRegistry == null || DataDefinitions.server == null) return;
         String rule = Objects.requireNonNull(DataDefinitions.structureRegistry.getKey(structure)).toString();
-        if (!SqlManager.structureMap.isEmpty() && !SqlManager.structureMap.getOrDefault(rule, true)) {
+        if (!SqlManager.worldgenMaps.get("structures").isEmpty() && !SqlManager.worldgenMaps.get("structures").getOrDefault(rule, true)) {
             cir.setReturnValue(StructureCheckResult.START_NOT_PRESENT);
         }
         if (DataDefinitions.populationDone && !SqlManager.getBoolean("structures", rule, "enabled")) {

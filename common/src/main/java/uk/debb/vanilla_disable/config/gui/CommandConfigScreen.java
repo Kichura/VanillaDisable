@@ -150,11 +150,11 @@ public class CommandConfigScreen extends Screen {
                 SqlManager.resetAll();
                 Objects.requireNonNull(CommandConfigScreen.this.minecraft).setScreen(new CommandConfigScreen(CommandConfigScreen.this.lastScreen));
             }).build();
-            Button cancelButton = Button.builder(Component.translatable("vd.command_config.cancel"), button -> {
+            Button cancelButton = Button.builder(Component.translatable("vd.config.cancel"), button -> {
                 SqlManager.undo(CommandConfigScreen.this.setValues);
                 CommandConfigScreen.this.onClose();
             }).build();
-            Button doneButton = Button.builder(Component.translatable("vd.command_config.done"), button ->
+            Button doneButton = Button.builder(Component.translatable("vd.config.done"), button ->
                     CommandConfigScreen.this.onClose()).build();
 
             defaultsButton.setPosition(CommandConfigScreen.this.width / 2 - 270, CommandConfigScreen.this.height - 22);
@@ -167,7 +167,7 @@ public class CommandConfigScreen extends Screen {
 
         @NotNull
         private EditBox getEditBox(ObjectSet<String> leftList, int width, LeftList ll, RightList rl) {
-            EditBox searchBox = new EditBox(CommandConfigScreen.this.font, 0, 25, (int) (width * 0.45), 20, Component.translatable("vd.command_config.search"));
+            EditBox searchBox = new EditBox(CommandConfigScreen.this.font, 0, 25, (int) (width * 0.45), 20, Component.translatable("vd.config.search"));
             searchBox.setResponder(string -> {
                 this.search = string;
 

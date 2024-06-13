@@ -84,7 +84,7 @@ public class DataUtils {
         if (resourceLocation.equals(Biomes.PLAINS.location())) return original;
         if (resourceLocation.equals(Biomes.NETHER_WASTES.location())) return original;
         if (resourceLocation.equals(Biomes.THE_END.location())) return original;
-        if (!SqlManager.biomeMap.isEmpty() && !SqlManager.biomeMap.getOrDefault(resourceLocation.toString(), true)) {
+        if (!SqlManager.worldgenMaps.get("biomes").isEmpty() && !SqlManager.worldgenMaps.get("biomes").getOrDefault(resourceLocation.toString(), true)) {
             return getDefaultBiome(original);
         }
         if (populationDone && !SqlManager.getBoolean("biomes", resourceLocation.toString(), "enabled")) {

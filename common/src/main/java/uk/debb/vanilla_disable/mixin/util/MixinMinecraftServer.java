@@ -29,5 +29,6 @@ public class MixinMinecraftServer {
     @Inject(method = "stopServer", at = @At("TAIL"))
     private void vanillaDisable$stopServer(CallbackInfo ci) {
         SqlManager.closeConnection();
+        SqlManager.worldgenMaps.forEach((table, map) -> map.clear());
     }
 }

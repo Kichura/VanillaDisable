@@ -17,8 +17,6 @@ import uk.debb.vanilla_disable.config.data.SqlManager;
 public abstract class MixinCreateWorldScreen {
     @Inject(method = "popScreen", at = @At("HEAD"))
     private void vanillaDisable$popScreen(CallbackInfo ci) {
-        SqlManager.biomeMap.clear();
-        SqlManager.structureMap.clear();
-        SqlManager.placedFeatureMap.clear();
+        SqlManager.worldgenMaps.forEach((table, map) -> map.clear());
     }
 }

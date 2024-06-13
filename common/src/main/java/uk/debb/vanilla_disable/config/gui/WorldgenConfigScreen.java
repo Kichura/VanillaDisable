@@ -28,14 +28,17 @@ import org.jetbrains.annotations.NotNull;
 import uk.debb.vanilla_disable.config.data.DataDefinitions;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class WorldgenConfigScreen extends Screen {
     private final CreateWorldScreen lastScreen;
-    private TabNavigationBar tabNavigationBar;
     private final TabManager tabManager = new TabManager(this::addRenderableWidget, this::removeWidget);
-    private String search = "";
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+    private TabNavigationBar tabNavigationBar;
+    private String search = "";
 
     public WorldgenConfigScreen(CreateWorldScreen lastScreen) {
         super(Component.translatable("vd.worldgen_config"));
@@ -88,16 +91,10 @@ public class WorldgenConfigScreen extends Screen {
         Objects.requireNonNull(minecraft).setScreen(lastScreen);
     }
 
-    class Tab extends GridLayoutTab {
-        WorldgenList list;
-
-        Tab(String tabName, Set<ResourceLocation> data, Type type) {
-            super(Component.translatable("vd.worldgen_config.tab." + tabName));
-            GridLayout.RowHelper rowHelper = this.layout.rowSpacing(8).createRowHelper(1);
-
-            this.list = new WorldgenList(data, type);
-            rowHelper.addChild(list);
-        }
+    enum Type {
+        BIOMES,
+        PLACED_FEATURES,
+        STRUCTURES
     }
 
     abstract static class WorldgenListEntry extends ContainerObjectSelectionList.Entry<WorldgenListEntry> {
@@ -112,6 +109,15 @@ public class WorldgenConfigScreen extends Screen {
         @Override
         public @NotNull List<? extends GuiEventListener> children() {
             return this.children;
+        }
+    }
+
+    class Tab extends GridLayoutTab {
+
+        Tab(String tabName, Set<ResourceLocation> data, Type type) {
+            super(Component.translatable("vd.worldgen_config.tab." + tabName));
+            GridLayout.RowHelper rowHelper = this.layout.rowSpacing(8).createRowHelper(1);
+            rowHelper.addChild(new WorldgenList(data, type));
         }
     }
 
@@ -211,11 +217,5 @@ public class WorldgenConfigScreen extends Screen {
                 }
             });
         }
-    }
-
-    enum Type {
-        BIOMES,
-        PLACED_FEATURES,
-        STRUCTURES
     }
 }

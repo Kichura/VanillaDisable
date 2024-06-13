@@ -49,7 +49,7 @@ public class CommandConfigScreen extends Screen {
     protected void init() {
         this.tabNavigationBar = TabNavigationBar.builder(this.tabManager, this.width)
                 .addTabs(new ObjectArrayList<Tab>() {{
-                    DataDefinitions.colData.keySet().forEach(colsKey -> add(new Tab(colsKey)));
+                    DataDefinitions.colData.keySet().stream().sorted().forEach(colsKey -> add(new Tab(colsKey)));
                 }}.toArray(new Tab[0])).build();
         this.addRenderableWidget(this.tabNavigationBar);
         tabNavigationBar.selectTab(0, false);

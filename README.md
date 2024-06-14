@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a fabric/quilt/neoforge mod that allows you to toggle or change many vanilla features through various configuration systems. Please see the wiki for instructions on how to use the systems. This tries to support the latest version of Minecraft. Mod compatibility is an aim but not always a reality.
+This is a fabric/quilt/neoforge mod that allows you to toggle or change many vanilla features through a command or GUI. Please see the wiki for instructions. I try to support the latest version of Minecraft. Mod compatibility is an aim but not always a reality.
 
 ## Downloads
 
@@ -14,8 +14,8 @@ This mod has no hard dependencies, and will run on its own. However, installing 
 
 ## Other
 
-The wiki page contains information for development, more detailed installation instructions, info about configuration systems and properties, information about the mixin configuration system, and details about the choice of modloader, version, and feature toggling system.
+The wiki page contains information for development, more detailed installation instructions, info about the config system and properties, information about the mixin configuration system, and details about the choice of modloader and version.
 
 ## License
 
-This mod is available under the [MPL 2.0](LICENSE) license. Some libraries included in the jar are available under different licenses, which are listed in [the wiki](https://github.com/DragonEggBedrockBreaking/VanillaDisable/wiki/Dependencies#jij).
+This mod is available under the [MPL 2.0](LICENSE) license. Some libraries included in the jar may be available under different licenses, and are listed in [the wiki](https://github.com/DragonEggBedrockBreaking/VanillaDisable/wiki/Dependencies#jij).

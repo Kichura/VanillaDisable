@@ -14,27 +14,27 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.LevelResource;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
-import uk.debb.vanilla_disable.Constants;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.*;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import static uk.debb.vanilla_disable.config.data.DataDefinitions.*;
 
 public class SqlManager {
-    public static final Properties properties = new Properties();
     public static final Object2ObjectMap<String, Object2BooleanMap<String>> worldgenMaps = new Object2ObjectOpenHashMap<>() {{
         put("biomes", new Object2BooleanOpenHashMap<>());
         put("placed_features", new Object2BooleanOpenHashMap<>());
         put("structures", new Object2BooleanOpenHashMap<>());
     }};
-    public static final Object2ObjectMap<String, ObjectList<String>> legacyGameruleMap = new Object2ObjectOpenHashMap<>();
     private static final Object2ObjectMap<String, Object> memo = new Object2ObjectOpenHashMap<>();
-    public static File tomlFile;
-    public static File propertiesFile;
     private static Connection connection;
     private static Statement statement;
     private static String PATH;
@@ -81,14 +81,7 @@ public class SqlManager {
                 }
             }
 
-            File directory = server.getWorldPath(LevelResource.ROOT).toFile();
-            tomlFile = new File(directory, "vanilla_disable_worldgen.toml");
-            propertiesFile = new File(directory, "vanilla_disable_worldgen.properties");
-            if (tomlFile.exists()) {
-                convertToml();
-            } else if (propertiesFile.exists()) {
-                convertProperties();
-            }
+            MigrationHandler.migrateWorldgen();
 
             worldgenMaps.forEach((table, map) -> {
                 if (map.isEmpty()) return;
@@ -111,75 +104,7 @@ public class SqlManager {
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
-        legacyGameruleMap.forEach((rule, values) -> {
-            if (rowData.get("misc").get(rule).get(values.getFirst()).equals(values.get(1))) return;
-            setValues("misc", rule, values.getFirst(), values.get(1), false, null, SetType.ONE);
-        });
-        legacyGameruleMap.clear();
-    }
-
-    public static void convertToml() {
-        if (!tomlFile.renameTo(propertiesFile)) {
-            Constants.LOG.error("Unable to convert legacy .toml worldgen config to .properties format.");
-            return;
-        }
-
-        try {
-            String[] lines = FileUtils.readFileToString(propertiesFile, Charset.defaultCharset()).split("\n");
-            Object2ObjectMap<String, StringBuilder> sections = new Object2ObjectOpenHashMap<>();
-
-            String current = "";
-            for (String line : lines) {
-                if (line.startsWith("[")) {
-                    current = line.substring(1, line.length() - 1);
-                    sections.put(current, new StringBuilder());
-                } else {
-                    sections.get(current).append(line.replace("  ", current + ".")).append("\n");
-                }
-            }
-
-            try (FileWriter writer = new FileWriter(propertiesFile)) {
-                sections.values().forEach(content -> {
-                    try {
-                        writer.write(content.toString());
-                    } catch (IOException ex) {
-                        throw new UncheckedIOException(ex);
-                    }
-                });
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-        } catch (IOException e) {
-            Constants.LOG.error("Unable to convert legacy .toml worldgen config to .properties format.");
-        }
-    }
-
-    public static void convertProperties() {
-        try (FileInputStream in = new FileInputStream(propertiesFile)) {
-            properties.load(in);
-        } catch (IOException e) {
-            Constants.LOG.error("Unable to load worldgen config.", e);
-        }
-
-        properties.forEach((key, value) -> {
-            if (value == "false") {
-                if (key.toString().startsWith("biomes.")) {
-                    if (key.toString().contains("end_spike_cage")) {
-                        writeToFile("UPDATE placed_features SET \"enabled\" = false WHERE id = 'minecraft_unofficial:end_spike_cage';");
-                    } else {
-                        writeToFile("UPDATE biomes SET \"enabled\" = false WHERE id = 'minecraft:" + key.toString().substring(7) + "';");
-                    }
-                } else if (key.toString().startsWith("structures.")) {
-                    writeToFile("UPDATE structures SET \"enabled\" = false WHERE id = 'minecraft:" + key.toString().substring(11) + "';");
-                } else if (key.toString().startsWith("placed_features.")) {
-                    writeToFile("UPDATE placed_features SET \"enabled\" = false WHERE id = 'minecraft:" + key.toString().substring(16) + "';");
-                }
-            }
-        });
-
-        if (!propertiesFile.delete()) {
-            Constants.LOG.error("Unable to delete legacy .properties worldgen config.");
-        }
+        MigrationHandler.migrateGamerules();
     }
 
     public static void closeConnection() {

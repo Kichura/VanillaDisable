@@ -69,6 +69,7 @@ public class DataDefinitions {
     public static boolean populationDone = false;
     public static Registry<Biome> biomeRegistry;
     public static Registry<Block> blockRegistry;
+    public static Registry<ResourceLocation> customStatRegistry;
     public static Registry<DamageType> damageTypeRegistry;
     public static Registry<Enchantment> enchantmentRegistry;
     public static Registry<EntityType<?>> entityTypeRegistry;
@@ -82,7 +83,6 @@ public class DataDefinitions {
     public static Registry<VillagerProfession> villagerProfessionRegistry;
     public static Registry<VillagerType> villagerTypeRegistry;
     private static Registry<BlockEntityType<?>> blockEntityRegistry;
-    private static Registry<ResourceLocation> customStatRegistry;
 
     public static void populateRegistries() {
         RegistryAccess registryAccess = server.registryAccess();

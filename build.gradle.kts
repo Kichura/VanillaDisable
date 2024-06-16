@@ -36,7 +36,6 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-
 subprojects {
     java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 

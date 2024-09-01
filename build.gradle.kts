@@ -17,7 +17,7 @@ val MOD_VERSION by extra { "4.0.0" }
 val MINECRAFT_VERSION by extra { "1.21" }
 val MINECRAFT_VERSION_RANGE_FABRIC by extra { ">=1.21" }
 val MINECRAFT_VERSION_RANGE_NEOFORGE by extra { "[1.21,1.22)" }
-val H2_VERSION by extra { "2.2.224" }
+val H2_VERSION by extra { "2.3.232" }
 val ASM_VERSION by extra { "9.7" }
 val PARCHMENT_MC_VERSION by extra { "1.21" }
 val PARCHMENT_VERSION by extra { "2024.07.07" }

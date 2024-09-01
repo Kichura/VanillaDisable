@@ -14,7 +14,7 @@ val MAVEN_GROUP by extra { "uk.debb" }
 val LICENSE by extra { "MPL-2.0" }
 val MOD_VERSION by extra { "4.0.0" }
 
-val MINECRAFT_VERSION by extra { "1.21" }
+val MINECRAFT_VERSION by extra { "1.21.1" }
 val MINECRAFT_VERSION_RANGE_FABRIC by extra { ">=1.21" }
 val MINECRAFT_VERSION_RANGE_NEOFORGE by extra { "[1.21,1.22)" }
 val H2_VERSION by extra { "2.3.232" }

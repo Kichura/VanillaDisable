@@ -25,15 +25,15 @@ public class MigrationHandler {
         }
         boolean v2Conversion = dynamic.get("damageEnabled").asString().result().isPresent();
         GameruleMigrationDefinitions.migrationData.forEach((table, data) -> data.forEach(holder -> {
-            if (!v2Conversion && !table.equals("misc")) return;
-            dynamic.get(holder.gameruleName).asString().result().ifPresent(s -> {
-                if (DataDefinitions.rowData.get(table).containsKey(holder.rowName)) {
-                    if (DataDefinitions.rowData.get(table).get(holder.rowName).get(holder.columnNames.getFirst()).equals(s))
-                        return;
-                    holder.columnNames.forEach(columnName -> SqlManager.setValues(table, null, columnName, s, false, holder.rowName, SetType.MATCHING));
+                    if (!v2Conversion && !table.equals("misc")) return;
+                    dynamic.get(holder.gameruleName).asString().result().ifPresent(s -> {
+                        if (DataDefinitions.rowData.get(table).containsKey(holder.rowName)) {
+                            if (DataDefinitions.rowData.get(table).get(holder.rowName).get(holder.columnNames.getFirst()).equals(s))
+                                return;
+                            holder.columnNames.forEach(columnName -> SqlManager.setValues(table, null, columnName, s, false, holder.rowName, SetType.MATCHING));
+                        }
+                    });
                 }
-            });
-        }
         ));
     }
 

@@ -942,8 +942,8 @@ public class GameruleMigrationDefinitions {
     }
 
     public static class MigrationDataHolder {
-        public String gameruleName;
-        public String rowName;
+        public final String gameruleName;
+        public final String rowName;
         public List<String> columnNames = new ObjectArrayList<>();
 
         public MigrationDataHolder(String gameruleName, String rowName, String columnName) {

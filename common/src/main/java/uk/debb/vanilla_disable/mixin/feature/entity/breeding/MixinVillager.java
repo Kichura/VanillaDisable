@@ -24,7 +24,8 @@ public abstract class MixinVillager {
             )
     )
     private boolean vanillaDisable$contains(boolean original, ItemStack stack) {
-        String name = "can_breed_with_" + DataUtils.getKeyFromItemRegistry(stack.getItem());
-        return SqlManager.getBoolean("entities", "minecraft:villager", name);
+        String name = "can_breed_with_" + DataUtils.lightCleanup(DataUtils.getKeyFromItemRegistry(stack.getItem()));
+        return SqlManager.getBoolean("entities", "minecraft:villager", name)
+                && ((Villager) (Object) this).getInventory().canAddItem(stack);
     }
 }

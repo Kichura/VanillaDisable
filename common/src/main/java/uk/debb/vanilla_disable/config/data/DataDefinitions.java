@@ -598,9 +598,7 @@ public class DataDefinitions {
                             }
 
                             Map<Item, Integer> fuels = AbstractFurnaceBlockEntity.getFuel();
-                            if (fuels.containsKey(item)) {
-                                put("fuel_duration", String.valueOf(fuels.get(item)));
-                            }
+                            put("fuel_duration", String.valueOf(fuels.getOrDefault(item, 0)));
 
                             put("can_break_blocks_in_creative", String.valueOf(!(item instanceof SwordItem)));
                             put("can_be_given_by_command", "true");

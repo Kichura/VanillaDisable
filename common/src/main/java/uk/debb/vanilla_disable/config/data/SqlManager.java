@@ -104,7 +104,9 @@ public class SqlManager {
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
-        MigrationHandler.migrateGamerules();
+        if (!server.isDedicatedServer()) {
+            MigrationHandler.migrateGamerules();
+        }
     }
 
     public static void closeConnection() {

@@ -126,7 +126,8 @@
     "util.MixinGameRules",
     "util.MixinKeyboardHandler",
     "util.MixinMinecraft",
-    "util.MixinMinecraftServer"
+    "util.MixinMinecraftServer",
+    "util.MixinPlayerList"
   ],
   "client": [
     "util.MixinCreateWorldScreen"

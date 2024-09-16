@@ -708,7 +708,7 @@ public class GameruleMigrationDefinitions {
             add(new MigrationDataHolder("triggerCommand", "/trigger", "enabled"));
             add(new MigrationDataHolder("wardenSpawnTrackerCommand", "/warden_spawn_tracker", "enabled"));
             add(new MigrationDataHolder("weatherCommand", "/weather", "enabled"));
-            add(new MigrationDataHolder("worldBorderCommand", "/worldboarder", "enabled"));
+            add(new MigrationDataHolder("worldBorderCommand", "/worldborder", "enabled"));
             add(new MigrationDataHolder("banDedicatedCommand", "/bam", "enabled"));
             add(new MigrationDataHolder("banIpDedicatedCommand", "/ban-ip", "enabled"));
             add(new MigrationDataHolder("banListDedicatedCommand", "/banlist", "enabled"));

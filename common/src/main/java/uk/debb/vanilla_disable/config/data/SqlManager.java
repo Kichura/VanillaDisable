@@ -185,11 +185,19 @@ public class SqlManager {
         if (memo.get(cacheKey) != null) {
             return memo.get(cacheKey);
         }
-        Object value = getValue(table, row, column, dataType);
+        Object value;
+        try {
+            value = getValue(table, row, column, dataType);
+        } catch (NullPointerException ignored) {
+            return getCachedValue(table, row, column, dataType);
+        }
         try {
             memo.put(cacheKey, value);
         } catch (IndexOutOfBoundsException ignored) {
             memo.put(cacheKey, value);
+        }
+        if (value == null) {
+            return getCachedValue(table, row, column, dataType);
         }
         return value;
     }

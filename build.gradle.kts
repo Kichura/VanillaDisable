@@ -25,7 +25,7 @@ val MIXIN_EXTRAS_VERSION by extra { "0.4.1" }
 val FABRIC_MIXIN_VERSION by extra { "0.15.3+mixin.0.8.7" }
 val FABRIC_LOADER_VERSION by extra { "0.16.5" }
 val FABRIC_LOADER_VERSION_RANGE by extra { ">=0.15.10" }
-val NEOFORGE_VERSION by extra { "21.1.54"}
+val NEOFORGE_VERSION by extra { "21.1.61"}
 val NEOFORGE_LOADER_VERSION_RANGE by extra { ">=21.1.0" }
 
 allprojects {

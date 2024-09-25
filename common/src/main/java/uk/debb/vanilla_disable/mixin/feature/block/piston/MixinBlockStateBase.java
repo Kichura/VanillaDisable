@@ -35,6 +35,6 @@ public abstract class MixinBlockStateBase {
         String name = DataUtils.getKeyFromBlockRegistry(block);
         String reaction = SqlManager.getString("blocks", name, "push_behaviour");
         if (reaction == null) return block.defaultBlockState().pushReaction;
-        return PushReaction.valueOf(reaction);
+        return PushReaction.valueOf(reaction.replace("'", ""));
     }
 }

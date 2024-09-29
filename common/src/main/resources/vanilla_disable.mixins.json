@@ -28,6 +28,8 @@
     "feature.block.function.MixinPistonBaseBlock",
     "feature.block.function.MixinRedstoneWireBlock",
     "feature.block.function.MixinSculkSensorBlock",
+    "feature.block.interaction.MixinBlockStateBase",
+    "feature.block.interaction.MixinItemStack",
     "feature.block.other.MixinBlock",
     "feature.block.other.MixinBlockStateBase",
     "feature.block.other.MixinCauldronBlock",

@@ -7,9 +7,13 @@
 package uk.debb.vanilla_disable.mixin.feature.item.function;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.context.UseOnContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import uk.debb.vanilla_disable.config.data.DataUtils;
@@ -30,5 +34,14 @@ public abstract class MixinItemStack {
             return Items.AIR;
         }
         return original;
+    }
+
+    @WrapMethod(method = "useOn")
+    private InteractionResult vanillaDisable$useOn(UseOnContext context, Operation<InteractionResult> original) {
+        String item = DataUtils.getKeyFromItemRegistry(context.getItemInHand().getItem());
+        if (!SqlManager.getBoolean("items", item, "works")) {
+            return InteractionResult.FAIL;
+        }
+        return original.call(context);
     }
 }

@@ -6,14 +6,13 @@
 
 package uk.debb.vanilla_disable.mixin.feature.entity.knockback;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
@@ -22,14 +21,15 @@ public abstract class MixinLivingEntity {
     @Shadow
     private @Nullable LivingEntity lastHurtByMob;
 
-    @Inject(method = "knockback", at = @At("HEAD"), cancellable = true)
-    public void vanillaDisable$knockback(CallbackInfo ci) {
+    @WrapMethod(method = "knockback")
+    public void vanillaDisable$knockback(double strength, double x, double z, Operation<Void> original) {
         String target = DataUtils.getKeyFromEntityTypeRegistry(((Entity) (Object) this).getType());
         if (this.lastHurtByMob != null) {
             String source = DataUtils.getKeyFromEntityTypeRegistry(this.lastHurtByMob.getType());
             if (!SqlManager.getBoolean("entities", target, DataUtils.lightCleanup(source) + "_knockback")) {
-                ci.cancel();
+                return;
             }
         }
+        original.call(strength, x, z);
     }
 }

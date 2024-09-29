@@ -6,19 +6,23 @@
 
 package uk.debb.vanilla_disable.mixin.feature.block.function;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(BeaconBlockEntity.class)
 public abstract class MixinBeaconBlockEntity {
-    @Inject(method = "applyEffects", at = @At("HEAD"), cancellable = true)
-    private static void vanillaDisable$applyEffects(CallbackInfo ci) {
-        if (!SqlManager.getBoolean("blocks", "minecraft:beacon", "works")) {
-            ci.cancel();
+    @WrapMethod(method = "applyEffects")
+    private static void vanillaDisable$applyEffects(Level level, BlockPos pos, int beaconLevel, @Nullable Holder<MobEffect> primaryEffect, @Nullable Holder<MobEffect> secondaryEffect, Operation<Void> original) {
+        if (SqlManager.getBoolean("blocks", "minecraft:beacon", "works")) {
+            original.call(level, pos, beaconLevel, primaryEffect, secondaryEffect);
         }
     }
 }

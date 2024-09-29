@@ -6,26 +6,25 @@
 
 package uk.debb.vanilla_disable.mixin.feature.block.function;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Entity.class)
 public abstract class MixinEntity {
-    @Inject(method = "onAboveBubbleCol", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$onAboveBubbleCol(CallbackInfo ci) {
-        if (!SqlManager.getBoolean("blocks", "minecraft:bubble_column", "works")) {
-            ci.cancel();
+    @WrapMethod(method = "onAboveBubbleCol")
+    private void vanillaDisable$onAboveBubbleCol(boolean downwards, Operation<Void> original) {
+        if (SqlManager.getBoolean("blocks", "minecraft:bubble_column", "works")) {
+            original.call(downwards);
         }
     }
 
-    @Inject(method = "onInsideBubbleColumn", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$onInsideBubbleColumn(CallbackInfo ci) {
-        if (!SqlManager.getBoolean("blocks", "minecraft:bubble_column", "works")) {
-            ci.cancel();
+    @WrapMethod(method = "onInsideBubbleColumn")
+    private void vanillaDisable$onInsideBubbleColumn(boolean downwards, Operation<Void> original) {
+        if (SqlManager.getBoolean("blocks", "minecraft:bubble_column", "works")) {
+            original.call(downwards);
         }
     }
 }

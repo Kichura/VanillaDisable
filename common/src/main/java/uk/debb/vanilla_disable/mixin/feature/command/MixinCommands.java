@@ -6,26 +6,26 @@
 
 package uk.debb.vanilla_disable.mixin.feature.command;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.brigadier.ParseResults;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.debb.vanilla_disable.config.data.DataDefinitions;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(Commands.class)
 public abstract class MixinCommands {
-    @Inject(method = "performCommand", at = @At(value = "HEAD"), cancellable = true)
-    private void vanillaDisable$performCommand(ParseResults<CommandSourceStack> parseResults, String command, CallbackInfo ci) {
-        if (!DataDefinitions.rowData.get("commands").containsKey("/" + command.split(" ")[0])) return;
-        if (!SqlManager.getBoolean("commands", "/" + command.split(" ")[0], "enabled")) {
+    @WrapMethod(method = "performCommand")
+    private void vanillaDisable$performCommand(ParseResults<CommandSourceStack> parseResults, String command, Operation<Void> original) {
+        if (DataDefinitions.rowData.get("commands").containsKey("/" + command.split(" ")[0]) &&
+                !SqlManager.getBoolean("commands", "/" + command.split(" ")[0], "enabled")) {
             DataDefinitions.server.getPlayerList().broadcastSystemMessage(Component.translatable("vd.commands.disabled.by.vd").withStyle(ChatFormatting.RED), false);
-            ci.cancel();
+            return;
         }
+        original.call(parseResults, command);
     }
 }

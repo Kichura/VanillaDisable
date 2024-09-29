@@ -6,22 +6,22 @@
 
 package uk.debb.vanilla_disable.mixin.feature.block.function;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.level.block.SculkSensorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(SculkSensorBlock.class)
 public abstract class MixinSculkSensorBlock {
-    @Inject(method = "canActivate", at = @At("HEAD"), cancellable = true)
-    private static void vanillaDisable$canActivate(BlockState state, CallbackInfoReturnable<Boolean> cir) {
+    @WrapMethod(method = "canActivate")
+    private static boolean vanillaDisable$canActivate(BlockState state, Operation<Boolean> original) {
         String type = DataUtils.getKeyFromBlockRegistry(state.getBlock());
-        if (!SqlManager.getBoolean("blocks", type, "works")) {
-            cir.setReturnValue(false);
+        if (SqlManager.getBoolean("blocks", type, "works")) {
+            return original.call(state);
         }
+        return false;
     }
 }

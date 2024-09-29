@@ -6,19 +6,21 @@
 
 package uk.debb.vanilla_disable.mixin.feature.block.function;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(DispenserBlock.class)
 public abstract class MixinDispenserBlock {
-    @Inject(method = "dispenseFrom", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$dispenseFrom(CallbackInfo ci) {
-        if (!SqlManager.getBoolean("blocks", "minecraft:dispenser", "works")) {
-            ci.cancel();
+    @WrapMethod(method = "dispenseFrom")
+    private void vanillaDisable$dispenseFrom(ServerLevel level, BlockState state, BlockPos pos, Operation<Void> original) {
+        if (SqlManager.getBoolean("blocks", "minecraft:dispenser", "works")) {
+            original.call(level, state, pos);
         }
     }
 }

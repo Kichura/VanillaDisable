@@ -6,24 +6,24 @@
 
 package uk.debb.vanilla_disable.mixin.feature.block.function;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.piston.PistonBaseBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(PistonBaseBlock.class)
 public abstract class MixinPistonBaseBlock {
-    @Inject(method = "triggerEvent", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param, CallbackInfoReturnable<Boolean> cir) {
+    @WrapMethod(method = "triggerEvent")
+    private boolean vanillaDisable$triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param, Operation<Boolean> original) {
         String type = DataUtils.getKeyFromBlockRegistry(state.getBlock());
-        if (!SqlManager.getBoolean("blocks", type, "works")) {
-            cir.setReturnValue(false);
+        if (SqlManager.getBoolean("blocks", type, "works")) {
+            return original.call(state, level, pos, id, param);
         }
+        return false;
     }
 }

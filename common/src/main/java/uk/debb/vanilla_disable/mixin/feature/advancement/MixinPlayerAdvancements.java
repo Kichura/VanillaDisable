@@ -6,28 +6,27 @@
 
 package uk.debb.vanilla_disable.mixin.feature.advancement;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.commands.AdvancementCommands;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.debb.vanilla_disable.config.data.DataDefinitions;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(PlayerAdvancements.class)
 public abstract class MixinPlayerAdvancements {
-    @Inject(method = "award", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$award(AdvancementHolder advancementHolder, String string, CallbackInfoReturnable<Boolean> cir) {
-        String adv = advancementHolder.id().toString();
-        if (!adv.contains("recipe") && !SqlManager.getBoolean("advancements", adv, "enabled")) {
-            if (Thread.currentThread().getStackTrace()[5].getClassName().equals(AdvancementCommands.class.getName())) {
-                DataDefinitions.server.getPlayerList().broadcastSystemMessage(Component.translatable("vd.advancements.disabled.by.vd").withStyle(ChatFormatting.RED), false);
-            }
-            cir.setReturnValue(false);
+    @WrapMethod(method = "award")
+    private boolean vanillaDisable$award(AdvancementHolder advancement, String criterionKey, Operation<Boolean> original) {
+        String adv = advancement.id().toString();
+        if (adv.contains("recipe") || SqlManager.getBoolean("advancements", adv, "enabled")) {
+            original.call(advancement, criterionKey);
+        } else if (Thread.currentThread().getStackTrace()[5].getClassName().equals(AdvancementCommands.class.getName())) {
+            DataDefinitions.server.getPlayerList().broadcastSystemMessage(Component.translatable("vd.advancements.disabled.by.vd").withStyle(ChatFormatting.RED), false);
         }
+        return false;
     }
 }

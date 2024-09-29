@@ -6,20 +6,22 @@
 
 package uk.debb.vanilla_disable.mixin.feature.entity.other;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(ZombieVillager.class)
 public abstract class MixinZombieVillager {
-    @Inject(method = "mobInteract", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$mobInteract(CallbackInfoReturnable<InteractionResult> cir) {
-        if (!SqlManager.getBoolean("entities", "minecraft:villager", "can_be_converted_to")) {
-            cir.setReturnValue(InteractionResult.FAIL);
+    @WrapMethod(method = "mobInteract")
+    private InteractionResult vanillaDisable$mobInteract(Player player, InteractionHand hand, Operation<InteractionResult> original) {
+        if (SqlManager.getBoolean("entities", "minecraft:villager", "can_be_converted_to")) {
+            return original.call(player, hand);
         }
+        return InteractionResult.FAIL;
     }
 }

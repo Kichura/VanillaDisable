@@ -6,14 +6,13 @@
 
 package uk.debb.vanilla_disable.mixin.feature.worldgen.structure;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.debb.vanilla_disable.config.data.DataDefinitions;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
@@ -22,15 +21,17 @@ import java.util.function.Consumer;
 
 @Mixin(StructureManager.class)
 public abstract class MixinStructureManager {
-    @Inject(method = "fillStartsForStructure", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$fillStartsForStructure(Structure structure, LongSet structureRefs, Consumer<StructureStart> startConsumer, CallbackInfo ci) {
-        if (DataDefinitions.structureRegistry == null) return;
-        String rule = Objects.requireNonNull(DataDefinitions.structureRegistry.getKey(structure)).toString();
-        if (!SqlManager.worldgenMaps.get("structures").isEmpty() && !SqlManager.worldgenMaps.get("structures").getOrDefault(rule, true)) {
-            ci.cancel();
+    @WrapMethod(method = "fillStartsForStructure")
+    private void vanillaDisable$fillStartsForStructure(Structure structure, LongSet structureRefs, Consumer<StructureStart> startConsumer, Operation<Void> original) {
+        if (DataDefinitions.structureRegistry != null) {
+            String rule = Objects.requireNonNull(DataDefinitions.structureRegistry.getKey(structure)).toString();
+            if (!SqlManager.worldgenMaps.get("structures").isEmpty() && !SqlManager.worldgenMaps.get("structures").getOrDefault(rule, true)) {
+                return;
+            }
+            if (DataDefinitions.populationDone && !SqlManager.getBoolean("structures", rule, "enabled")) {
+                return;
+            }
         }
-        if (DataDefinitions.populationDone && !SqlManager.getBoolean("structures", rule, "enabled")) {
-            ci.cancel();
-        }
+        original.call(structure, structureRefs, startConsumer);
     }
 }

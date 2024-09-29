@@ -6,6 +6,8 @@
 
 package uk.debb.vanilla_disable.mixin.feature.entity.spawning;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
@@ -17,9 +19,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
@@ -30,20 +29,22 @@ public abstract class MixinSpawnEggItem {
     @Shadow
     public abstract EntityType<?> getType(ItemStack par1);
 
-    @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$useOn(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
+    @WrapMethod(method = "useOn")
+    private InteractionResult vanillaDisable$useOn(UseOnContext context, Operation<InteractionResult> original) {
         ItemStack itemStack = context.getItemInHand();
         String entity = DataUtils.getKeyFromEntityTypeRegistry(this.getType(itemStack));
-        if (!SqlManager.getBoolean("entities", entity, "spawn_egg")) {
-            cir.setReturnValue(InteractionResult.FAIL);
+        if (SqlManager.getBoolean("entities", entity, "spawn_egg")) {
+            return original.call(context);
         }
+        return InteractionResult.FAIL;
     }
 
-    @Inject(method = "spawnOffspringFromSpawnEgg", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$spawnOffspringFromSpawnEgg(Player player, Mob mob, EntityType<? extends Mob> entityType, ServerLevel serverLevel, Vec3 pos, ItemStack stack, CallbackInfoReturnable<Optional<Mob>> cir) {
+    @WrapMethod(method = "spawnOffspringFromSpawnEgg")
+    private Optional<Mob> vanillaDisable$spawnOffspringFromSpawnEgg(Player player, Mob mob, EntityType<? extends Mob> entityType, ServerLevel serverLevel, Vec3 pos, ItemStack stack, Operation<Optional<Mob>> original) {
         String entity = DataUtils.getKeyFromEntityTypeRegistry(entityType);
-        if (!SqlManager.getBoolean("entities", entity, "spawn_egg")) {
-            cir.setReturnValue(Optional.empty());
+        if (SqlManager.getBoolean("entities", entity, "spawn_egg")) {
+            return original.call(player, mob, entityType, serverLevel, pos, stack);
         }
+        return Optional.empty();
     }
 }

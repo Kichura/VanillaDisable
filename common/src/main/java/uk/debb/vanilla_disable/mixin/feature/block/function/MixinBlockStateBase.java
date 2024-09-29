@@ -7,13 +7,16 @@
 package uk.debb.vanilla_disable.mixin.feature.block.function;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
@@ -22,11 +25,11 @@ public abstract class MixinBlockStateBase {
     @Shadow
     public abstract Block getBlock();
 
-    @Inject(method = "entityInside", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$entityInside(CallbackInfo ci) {
+    @WrapMethod(method = "entityInside")
+    private void vanillaDisable$entityInside(Level level, BlockPos pos, Entity entity, Operation<Void> original) {
         String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
-        if (!SqlManager.getBoolean("blocks", block, "works")) {
-            ci.cancel();
+        if (SqlManager.getBoolean("blocks", block, "works")) {
+            original.call(level, pos, entity);
         }
     }
 

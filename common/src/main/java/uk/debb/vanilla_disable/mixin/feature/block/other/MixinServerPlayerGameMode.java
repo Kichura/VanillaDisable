@@ -6,14 +6,13 @@
 
 package uk.debb.vanilla_disable.mixin.feature.block.other;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
@@ -22,12 +21,13 @@ public abstract class MixinServerPlayerGameMode {
     @Shadow
     protected ServerLevel level;
 
-    @Inject(method = "destroyBlock", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$destroyBlock(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+    @WrapMethod(method = "destroyBlock")
+    private boolean vanillaDisable$destroyBlock(BlockPos pos, Operation<Boolean> original) {
         String block = DataUtils.getKeyFromBlockRegistry(
                 this.level.getBlockState(pos).getBlock());
-        if (!SqlManager.getBoolean("blocks", block, "can_break")) {
-            cir.setReturnValue(false);
+        if (SqlManager.getBoolean("blocks", block, "can_break")) {
+            original.call(pos);
         }
+        return false;
     }
 }

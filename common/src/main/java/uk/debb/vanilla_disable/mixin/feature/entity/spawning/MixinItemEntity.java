@@ -6,6 +6,7 @@
 
 package uk.debb.vanilla_disable.mixin.feature.entity.spawning;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,18 +32,15 @@ public abstract class MixinItemEntity {
         }
     }
 
-    @Inject(
+    @WrapWithCondition(
             method = "tick",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/item/ItemEntity;discard()V",
                     ordinal = 1
-            ),
-            cancellable = true
+            )
     )
-    private void vanillaDisable$discard(CallbackInfo ci) {
-        if (this.pickupDelay != Short.MAX_VALUE && this.age < SqlManager.getInt("entities", "minecraft:item", "despawn_time")) {
-            ci.cancel();
-        }
+    private boolean vanillaDisable$discard(ItemEntity instance) {
+        return this.pickupDelay == Short.MAX_VALUE || this.age >= SqlManager.getInt("entities", "minecraft:item", "despawn_time");
     }
 }

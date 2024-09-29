@@ -7,6 +7,8 @@
 package uk.debb.vanilla_disable.mixin.feature.entity.other;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -20,7 +22,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import uk.debb.vanilla_disable.config.data.DataDefinitions;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
@@ -46,11 +47,12 @@ public abstract class MixinPlayer {
         }
     }
 
-    @Inject(method = "interactOn", at = @At("HEAD"), cancellable = true)
-    private void vanillaDisable$interactOn(Entity entityToInteractOn, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
+    @WrapMethod(method = "interactOn")
+    private InteractionResult vanillaDisable$interactOn(Entity entityToInteractOn, InteractionHand hand, Operation<InteractionResult> original) {
         String entityType = DataUtils.getKeyFromEntityTypeRegistry(entityToInteractOn.getType());
-        if (!SqlManager.getBoolean("entities", entityType, "can_player_interact")) {
-            cir.setReturnValue(InteractionResult.FAIL);
+        if (SqlManager.getBoolean("entities", entityType, "can_player_interact")) {
+            return original.call(entityToInteractOn, hand);
         }
+        return InteractionResult.FAIL;
     }
 }

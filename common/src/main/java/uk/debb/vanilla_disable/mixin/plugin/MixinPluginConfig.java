@@ -6,7 +6,10 @@
 
 package uk.debb.vanilla_disable.mixin.plugin;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import uk.debb.vanilla_disable.Constants;
+import uk.debb.vanilla_disable.platform.Services;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -14,6 +17,9 @@ import java.util.Properties;
 
 public class MixinPluginConfig {
     public final Properties properties;
+    public final Object2ObjectMap<String, String> compatibility = new Object2ObjectOpenHashMap<>() {{
+        put("mixin.feature.item.food", "nostalgic_tweaks");
+    }};
     private final File configDirectory;
     private final File configFile;
 
@@ -51,10 +57,13 @@ public class MixinPluginConfig {
     }
 
     public boolean isMixinConfigured(String mixinName) {
-        return properties.containsKey(mixinName);
+        return properties.containsKey(mixinName) || compatibility.containsKey(mixinName);
     }
 
     public boolean isMixinEnabled(String mixinName) {
+        if (compatibility.containsKey(mixinName) && Services.PLATFORM.isModLoaded(compatibility.get(mixinName))) {
+            return false;
+        }
         return !properties.getProperty(mixinName, "true").equals("false");
     }
 }

@@ -10,6 +10,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import uk.debb.vanilla_disable.Constants;
+import uk.debb.vanilla_disable.platform.Services;
 
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,11 @@ public class VanillaDisableMixinPlugin implements IMixinConfigPlugin {
         if (config == null) {
             config = new MixinPluginConfig();
             Constants.LOG.info("Loaded VanillaDisable mixin config file with {} override(s).", config.properties.size());
+            config.compatibility.forEach((mixin, mod) -> {
+                if (Services.PLATFORM.isModLoaded(mod)) {
+                    Constants.LOG.warn("Disabled {} due to compatibility with {}.", mixin, mod);
+                }
+            });
         }
     }
 

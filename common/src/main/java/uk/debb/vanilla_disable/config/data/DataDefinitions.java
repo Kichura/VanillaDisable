@@ -48,6 +48,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.PushReaction;
+import uk.debb.vanilla_disable.platform.Services;
 
 import java.util.Arrays;
 import java.util.List;
@@ -239,8 +240,10 @@ public class DataDefinitions {
                 put("dispenser_interaction", new ObjectObjectImmutablePair<>(BOOLEAN, Component.translatable("vd.commandRule.items.dispenserInteraction")));
                 put("durability", new ObjectObjectImmutablePair<>(INTEGER, Component.translatable("vd.commandRule.items.durability")));
                 put("fuel_duration", new ObjectObjectImmutablePair<>(INTEGER, Component.translatable("vd.commandRule.items.fuelDuration")));
-                put("nutrition", new ObjectObjectImmutablePair<>(INTEGER, Component.translatable("vd.commandRule.items.nutrition")));
-                put("saturation", new ObjectObjectImmutablePair<>(REAL, Component.translatable("vd.commandRule.items.saturation")));
+                if (!Services.PLATFORM.isModLoaded("nostalgic_tweaks")) {
+                    put("nutrition", new ObjectObjectImmutablePair<>(INTEGER, Component.translatable("vd.commandRule.items.nutrition")));
+                    put("saturation", new ObjectObjectImmutablePair<>(REAL, Component.translatable("vd.commandRule.items.saturation")));
+                }
                 put("works", new ObjectObjectImmutablePair<>(BOOLEAN, Component.translatable("vd.commandRule.items.works")));
             }});
         }});
@@ -574,13 +577,15 @@ public class DataDefinitions {
                             }
 
                             FoodProperties foodProperties = itemStack.get(DataComponents.FOOD);
-                            if (foodProperties != null) {
-                                put("nutrition", String.valueOf(foodProperties.nutrition()));
-                                put("saturation", String.valueOf(foodProperties.saturation()));
-                            }
-                            if (item.equals(Items.CAKE)) {
-                                put("nutrition", "2");
-                                put("saturation", "0.1");
+                            if (!Services.PLATFORM.isModLoaded("nostalgic_tweaks")) {
+                                if (foodProperties != null) {
+                                    put("nutrition", String.valueOf(foodProperties.nutrition()));
+                                    put("saturation", String.valueOf(foodProperties.saturation()));
+                                }
+                                if (item.equals(Items.CAKE)) {
+                                    put("nutrition", "2");
+                                    put("saturation", "0.1");
+                                }
                             }
 
                             if (item.equals(Items.POTION) || item.equals(Items.SPLASH_POTION) ||

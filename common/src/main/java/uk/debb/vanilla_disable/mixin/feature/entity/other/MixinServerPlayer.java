@@ -25,7 +25,7 @@ public abstract class MixinServerPlayer {
     @WrapMethod(method = "awardStat")
     private void vanillaDisable$awardStat(Stat<?> stat, int increment, Operation<Void> original) {
         if (stat.getType().equals(Stats.CUSTOM) && !SqlManager.getBoolean("entities", "minecraft:player",
-                    DataUtils.lightCleanup(stat.getName().split(":")[1].replace(".", ":")) + "_custom_stat")) {
+                DataUtils.lightCleanup(stat.getName().split(":")[1].replace(".", ":")) + "_custom_stat")) {
             return;
         } else if (!SqlManager.getBoolean("entities", "minecraft:player",
                 DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.statTypeRegistry.getKey(stat.getType()))) + "_stat_type")) {

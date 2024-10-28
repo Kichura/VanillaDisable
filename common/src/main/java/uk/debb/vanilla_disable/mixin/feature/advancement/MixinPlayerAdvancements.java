@@ -23,7 +23,7 @@ public abstract class MixinPlayerAdvancements {
     private boolean vanillaDisable$award(AdvancementHolder advancement, String criterionKey, Operation<Boolean> original) {
         String adv = advancement.id().toString();
         if (adv.contains("recipe") || SqlManager.getBoolean("advancements", adv, "enabled")) {
-            original.call(advancement, criterionKey);
+            return original.call(advancement, criterionKey);
         } else if (Thread.currentThread().getStackTrace()[5].getClassName().equals(AdvancementCommands.class.getName())) {
             DataDefinitions.server.getPlayerList().broadcastSystemMessage(Component.translatable("vd.advancements.disabled.by.vd").withStyle(ChatFormatting.RED), false);
         }

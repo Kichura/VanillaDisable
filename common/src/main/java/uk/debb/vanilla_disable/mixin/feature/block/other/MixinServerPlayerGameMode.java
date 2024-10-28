@@ -26,7 +26,7 @@ public abstract class MixinServerPlayerGameMode {
         String block = DataUtils.getKeyFromBlockRegistry(
                 this.level.getBlockState(pos).getBlock());
         if (SqlManager.getBoolean("blocks", block, "can_break")) {
-            original.call(pos);
+            return original.call(pos);
         }
         return false;
     }

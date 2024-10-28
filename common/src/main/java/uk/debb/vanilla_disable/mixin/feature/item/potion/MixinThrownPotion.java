@@ -16,18 +16,6 @@ import uk.debb.vanilla_disable.config.data.DataUtils;
 @Mixin(ThrownPotion.class)
 public abstract class MixinThrownPotion {
     @ModifyExpressionValue(
-            method = "onHitBlock",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/item/ItemStack;getOrDefault(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"
-            )
-    )
-    private Object vanillaDisable$getOrDefault1(Object original) {
-        String item = DataUtils.getKeyFromItemRegistry(((ThrownPotion) (Object) this).getItem().getItem());
-        return DataUtils.getPotionContents((PotionContents) original, item);
-    }
-
-    @ModifyExpressionValue(
             method = "onHit",
             at = @At(
                     value = "INVOKE",

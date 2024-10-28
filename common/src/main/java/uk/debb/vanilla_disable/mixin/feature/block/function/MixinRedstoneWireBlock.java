@@ -14,8 +14,8 @@ import uk.debb.vanilla_disable.config.data.SqlManager;
 
 @Mixin(RedStoneWireBlock.class)
 public abstract class MixinRedstoneWireBlock {
-    @ModifyReturnValue(method = "getWireSignal", at = @At("RETURN"))
-    private int vanillaDisable$getWireSignal(int original) {
+    @ModifyReturnValue(method = "getBlockSignal", at = @At("RETURN"))
+    private int vanillaDisable$getBlockSignal(int original) {
         if (!SqlManager.getBoolean("blocks", "minecraft:redstone_wire", "works")) {
             return 0;
         }

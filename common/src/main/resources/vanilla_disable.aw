@@ -1,10 +1,8 @@
 accessWidener v1 named
 
 accessible field net/minecraft/world/level/block/DispenserBlock DISPENSER_REGISTRY Ljava/util/Map;
-accessible field net/minecraft/world/entity/npc/Villager WANTED_ITEMS Ljava/util/Set;
 accessible method net/minecraft/world/level/block/FireBlock getBurnOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
 accessible method net/minecraft/world/level/block/FireBlock getIgniteOdds (Lnet/minecraft/world/level/block/state/BlockState;)I
-accessible method net/minecraft/world/entity/vehicle/Boat checkInWater ()Z
 accessible class net/minecraft/world/entity/animal/Cat$CatTemptGoal
 accessible class net/minecraft/world/entity/animal/Ocelot$OcelotTemptGoal
 accessible field net/minecraft/world/level/biome/BiomeSource possibleBiomes Ljava/util/function/Supplier;
@@ -25,3 +23,4 @@ accessible field net/minecraft/client/gui/components/Checkbox selected Z
 accessible field net/minecraft/world/level/block/state/BlockBehaviour$BlockStateBase pushReaction Lnet/minecraft/world/level/material/PushReaction;
 accessible field net/minecraft/world/item/enchantment/ItemEnchantments enchantments Lit/unimi/dsi/fastutil/objects/Object2IntOpenHashMap;
 mutable field net/minecraft/world/item/enchantment/ItemEnchantments enchantments Lit/unimi/dsi/fastutil/objects/Object2IntOpenHashMap;
+accessible field net/minecraft/world/level/block/entity/FuelValues values Lit/unimi/dsi/fastutil/objects/Object2IntSortedMap;

@@ -18,7 +18,7 @@ public abstract class MixinObserverBlock {
             method = "startSignal",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/LevelAccessor;scheduleTick(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;I)V"
+                    target = "Lnet/minecraft/world/level/ScheduledTickAccess;scheduleTick(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Block;I)V"
             ),
             index = 2
     )

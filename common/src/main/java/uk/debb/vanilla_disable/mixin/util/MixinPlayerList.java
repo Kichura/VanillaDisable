@@ -18,6 +18,6 @@ public abstract class MixinPlayerList {
     )
     private boolean vanillaDisable$sendCommands(Commands instance, ServerPlayer player) {
         String placementMethod = Thread.currentThread().getStackTrace()[4].getMethodName();
-        return !(placementMethod.equals("changeDimension") || placementMethod.equals("method_5731"));
+        return !(placementMethod.equals("teleport") || placementMethod.equals("method_61275"));
     }
 }

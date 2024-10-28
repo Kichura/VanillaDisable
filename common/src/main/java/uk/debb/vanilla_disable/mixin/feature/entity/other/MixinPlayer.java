@@ -10,6 +10,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -31,9 +32,9 @@ import java.util.Objects;
 @Mixin(Player.class)
 public abstract class MixinPlayer {
     @ModifyReturnValue(method = "isInvulnerableTo", at = @At(value = "RETURN"))
-    private boolean vanillaDisable$isInvulnerableTo(boolean original, DamageSource source) {
+    private boolean vanillaDisable$isInvulnerableTo(boolean original, ServerLevel serverLevel, DamageSource damageSource) {
         return original || !SqlManager.getBoolean("entities", "minecraft:player",
-                DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.damageTypeRegistry.getKey(source.type()))) + "_damage");
+                DataUtils.lightCleanup(Objects.requireNonNull(DataDefinitions.damageTypeRegistry.getKey(damageSource.type()))) + "_damage");
     }
 
     @SuppressWarnings("ConstantConditions")

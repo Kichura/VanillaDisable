@@ -11,7 +11,6 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -40,12 +39,12 @@ public abstract class MixinBlockStateBase {
     }
 
     @WrapMethod(method = "useItemOn")
-    private ItemInteractionResult vanillaDisable$useItemOn(ItemStack stack, Level level, Player player, InteractionHand hand, BlockHitResult hitResult, Operation<ItemInteractionResult> original) {
+    private InteractionResult vanillaDisable$useItemOn(ItemStack stack, Level level, Player player, InteractionHand hand, BlockHitResult hitResult, Operation<InteractionResult> original) {
         String block = DataUtils.getKeyFromBlockRegistry(this.getBlock());
         if (SqlManager.getBoolean("blocks", block, "can_interact")) {
             return original.call(stack, level, player, hand, hitResult);
         }
-        return ItemInteractionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 
     @ModifyReturnValue(method = "getMenuProvider", at = @At("RETURN"))

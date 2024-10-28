@@ -69,13 +69,13 @@ public class DataUtils {
     }
 
     public static Holder<Biome> getDefaultBiome(Holder<Biome> biome) {
-        if (server == null) return biomeRegistry.getHolderOrThrow(Biomes.PLAINS);
+        if (server == null) return Holder.direct(biomeRegistry.getValueOrThrow(Biomes.PLAINS));
         if (hasBiome(Level.NETHER, biome)) {
-            return biomeRegistry.getHolderOrThrow(Biomes.NETHER_WASTES);
+            return Holder.direct(biomeRegistry.getValueOrThrow(Biomes.NETHER_WASTES));
         } else if (hasBiome(Level.END, biome)) {
-            return biomeRegistry.getHolderOrThrow(Biomes.THE_END);
+            return Holder.direct(biomeRegistry.getValueOrThrow(Biomes.THE_END));
         }
-        return biomeRegistry.getHolderOrThrow(Biomes.PLAINS);
+        return Holder.direct(biomeRegistry.getValueOrThrow(Biomes.PLAINS));
     }
 
     public static Holder<Biome> getBiome(Holder<Biome> original) {

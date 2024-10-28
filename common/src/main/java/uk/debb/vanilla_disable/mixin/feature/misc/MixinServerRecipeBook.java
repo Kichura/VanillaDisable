@@ -9,31 +9,29 @@ package uk.debb.vanilla_disable.mixin.feature.misc;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.protocol.game.ClientboundRecipePacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerRecipeBook;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.Recipe;
 import org.spongepowered.asm.mixin.Mixin;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
-import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @Mixin(ServerRecipeBook.class)
 public class MixinServerRecipeBook {
     @WrapMethod(method = "loadRecipes")
-    private void vanillaDisable$loadRecipes(ListTag tags, Consumer<RecipeHolder<?>> recipeConsumer, RecipeManager recipeManager, Operation<Void> original) {
+    private void vanillaDisable$loadRecipes(ListTag listTag, Consumer<ResourceKey<Recipe<?>>> consumer, Predicate<ResourceKey<Recipe<?>>> predicate, Operation<Void> original) {
         if (SqlManager.getBoolean("misc", "recipe_book", "enabled")) {
-            original.call(tags, recipeConsumer, recipeManager);
+            original.call(listTag, consumer, predicate);
         }
     }
 
-    @WrapMethod(method = "sendRecipes")
-    private void vanillaDisable$sendRecipes(ClientboundRecipePacket.State state, ServerPlayer player, List<ResourceLocation> recipes, Operation<Void> original) {
+    @WrapMethod(method = "sendInitialRecipeBook")
+    private void vanillaDisable$sendInitialRecipeBook(ServerPlayer player, Operation<Void> original) {
         if (SqlManager.getBoolean("misc", "recipe_book", "enabled")) {
-            original.call(state, player, recipes);
+            original.call(player);
         }
     }
 }

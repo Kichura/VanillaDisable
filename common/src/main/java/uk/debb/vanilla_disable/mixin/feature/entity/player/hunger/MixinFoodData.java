@@ -19,7 +19,7 @@ public abstract class MixinFoodData {
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/Level;getDifficulty()Lnet/minecraft/world/Difficulty;"
+                    target = "Lnet/minecraft/server/level/ServerLevel;getDifficulty()Lnet/minecraft/world/Difficulty;"
             )
     )
     private Difficulty vanillaDisable$getDifficulty(Difficulty original) {

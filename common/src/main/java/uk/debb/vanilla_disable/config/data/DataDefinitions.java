@@ -21,18 +21,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.stats.StatType;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
+import net.minecraft.world.entity.vehicle.AbstractBoat;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -42,8 +40,8 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.FuelValues;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -52,7 +50,6 @@ import uk.debb.vanilla_disable.platform.Services;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static uk.debb.vanilla_disable.config.data.DataType.*;
@@ -87,22 +84,22 @@ public class DataDefinitions {
 
     public static void populateRegistries() {
         RegistryAccess registryAccess = server.registryAccess();
-        blockRegistry = registryAccess.registryOrThrow(Registries.BLOCK);
-        biomeRegistry = registryAccess.registryOrThrow(Registries.BIOME);
-        blockEntityRegistry = registryAccess.registryOrThrow(Registries.BLOCK_ENTITY_TYPE);
-        customStatRegistry = registryAccess.registryOrThrow(Registries.CUSTOM_STAT);
-        damageTypeRegistry = registryAccess.registryOrThrow(Registries.DAMAGE_TYPE);
-        enchantmentRegistry = registryAccess.registryOrThrow(Registries.ENCHANTMENT);
-        entityTypeRegistry = registryAccess.registryOrThrow(Registries.ENTITY_TYPE);
-        itemRegistry = registryAccess.registryOrThrow(Registries.ITEM);
-        mobEffectRegistry = registryAccess.registryOrThrow(Registries.MOB_EFFECT);
-        paintingVariantRegistry = registryAccess.registryOrThrow(Registries.PAINTING_VARIANT);
-        placedFeatureRegistry = registryAccess.registryOrThrow(Registries.PLACED_FEATURE);
-        potionRegistry = registryAccess.registryOrThrow(Registries.POTION);
-        statTypeRegistry = registryAccess.registryOrThrow(Registries.STAT_TYPE);
-        structureRegistry = registryAccess.registryOrThrow(Registries.STRUCTURE);
-        villagerProfessionRegistry = registryAccess.registryOrThrow(Registries.VILLAGER_PROFESSION);
-        villagerTypeRegistry = registryAccess.registryOrThrow(Registries.VILLAGER_TYPE);
+        blockRegistry = registryAccess.lookupOrThrow(Registries.BLOCK);
+        biomeRegistry = registryAccess.lookupOrThrow(Registries.BIOME);
+        blockEntityRegistry = registryAccess.lookupOrThrow(Registries.BLOCK_ENTITY_TYPE);
+        customStatRegistry = registryAccess.lookupOrThrow(Registries.CUSTOM_STAT);
+        damageTypeRegistry = registryAccess.lookupOrThrow(Registries.DAMAGE_TYPE);
+        enchantmentRegistry = registryAccess.lookupOrThrow(Registries.ENCHANTMENT);
+        entityTypeRegistry = registryAccess.lookupOrThrow(Registries.ENTITY_TYPE);
+        itemRegistry = registryAccess.lookupOrThrow(Registries.ITEM);
+        mobEffectRegistry = registryAccess.lookupOrThrow(Registries.MOB_EFFECT);
+        paintingVariantRegistry = registryAccess.lookupOrThrow(Registries.PAINTING_VARIANT);
+        placedFeatureRegistry = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
+        potionRegistry = registryAccess.lookupOrThrow(Registries.POTION);
+        statTypeRegistry = registryAccess.lookupOrThrow(Registries.STAT_TYPE);
+        structureRegistry = registryAccess.lookupOrThrow(Registries.STRUCTURE);
+        villagerProfessionRegistry = registryAccess.lookupOrThrow(Registries.VILLAGER_PROFESSION);
+        villagerTypeRegistry = registryAccess.lookupOrThrow(Registries.VILLAGER_TYPE);
     }
 
     public static void populateCols() {
@@ -306,7 +303,7 @@ public class DataDefinitions {
                     put(Objects.requireNonNull(entityTypeRegistry.getKey(entityType)).toString(), new Object2ObjectOpenHashMap<>() {{
                         Entity entity = null;
                         if (!entityType.equals(EntityType.ENDER_DRAGON)) {
-                            entity = entityType.create(server.overworld());
+                            entity = entityType.create(server.overworld(), EntitySpawnReason.COMMAND);
                         }
 
                         put("can_player_interact", "true");
@@ -376,7 +373,7 @@ public class DataDefinitions {
                             villagerTypeRegistry.keySet().forEach(type -> put(lightCleanup(type) + "_type", "true"));
                             put("can_breed", "true");
                             itemRegistry.forEach(item -> {
-                                boolean villagerWants = Villager.WANTED_ITEMS.contains(item);
+                                boolean villagerWants = item.getDefaultInstance().is(ItemTags.VILLAGER_PICKS_UP);
                                 put("can_breed_with_" +
                                                 lightCleanup(Objects.requireNonNull(itemRegistry.getKey(item)).toString()),
                                         String.valueOf(villagerWants));
@@ -431,7 +428,7 @@ public class DataDefinitions {
 
                         put("can_exist", "true");
 
-                        if (entityType.equals(EntityType.BOAT)) {
+                        if (entity instanceof AbstractBoat) {
                             put("alpha_behaviour", "false");
                         }
 
@@ -561,6 +558,7 @@ public class DataDefinitions {
                         put("can_be_placed_by_command", "true");
                     }}));
         }});
+        FuelValues fuelValues = server.overworld().fuelValues();
         rowData.put("items", new Object2ObjectOpenHashMap<>() {{
             itemRegistry.forEach((item) ->
                     put(Objects.requireNonNull(itemRegistry.getKey(item)).toString(), new Object2ObjectOpenHashMap<>() {{
@@ -602,8 +600,7 @@ public class DataDefinitions {
                                 put("cauldron_interaction", "true");
                             }
 
-                            Map<Item, Integer> fuels = AbstractFurnaceBlockEntity.getFuel();
-                            put("fuel_duration", String.valueOf(fuels.getOrDefault(item, 0)));
+                            put("fuel_duration", String.valueOf(fuelValues.values.getOrDefault(item, 0)));
 
                             put("can_break_blocks_in_creative", String.valueOf(!(item instanceof SwordItem)));
                             put("can_be_given_by_command", "true");

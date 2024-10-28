@@ -8,14 +8,10 @@ package uk.debb.vanilla_disable.mixin.feature.entity.spawning;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.SpawnData;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,12 +19,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import uk.debb.vanilla_disable.config.data.DataUtils;
 import uk.debb.vanilla_disable.config.data.SqlManager;
 
-import java.util.function.Function;
-
 @Mixin(BaseSpawner.class)
 public abstract class MixinBaseSpawner {
     @Shadow
-    protected abstract SpawnData getOrCreateNextSpawnData(@Nullable Level arg, RandomSource arg2, BlockPos arg3);
+    public abstract @Nullable Entity getOrCreateDisplayEntity(Level level, BlockPos pos);
 
     @ModifyExpressionValue(
             method = "serverTick",
@@ -38,8 +32,7 @@ public abstract class MixinBaseSpawner {
             )
     )
     private boolean vanillaDisable$isNearPlayer(boolean original, ServerLevel serverLevel, BlockPos pos) {
-        CompoundTag compoundTag = this.getOrCreateNextSpawnData(serverLevel, serverLevel.getRandom(), pos).getEntityToSpawn();
-        Entity entity = EntityType.loadEntityRecursive(compoundTag, serverLevel, Function.identity());
+        Entity entity = this.getOrCreateDisplayEntity(serverLevel, pos);
         if (entity != null) {
             String entityType = DataUtils.getKeyFromEntityTypeRegistry(entity.getType());
             if (!SqlManager.getBoolean("entities", entityType, "spawner")) {

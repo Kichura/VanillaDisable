@@ -48,9 +48,9 @@ public class WorldgenConfigScreen extends Screen {
     @Override
     protected void init() {
         RegistryAccess.Frozen registryAccess = this.lastScreen.getUiState().getSettings().worldgenRegistries().compositeAccess();
-        DataDefinitions.biomeRegistry = registryAccess.registryOrThrow(Registries.BIOME);
-        DataDefinitions.structureRegistry = registryAccess.registryOrThrow(Registries.STRUCTURE);
-        DataDefinitions.placedFeatureRegistry = registryAccess.registryOrThrow(Registries.PLACED_FEATURE);
+        DataDefinitions.biomeRegistry = registryAccess.lookupOrThrow(Registries.BIOME);
+        DataDefinitions.structureRegistry = registryAccess.lookupOrThrow(Registries.STRUCTURE);
+        DataDefinitions.placedFeatureRegistry = registryAccess.lookupOrThrow(Registries.PLACED_FEATURE);
 
         tabNavigationBar = TabNavigationBar.builder(this.tabManager, this.width)
                 .addTabs(

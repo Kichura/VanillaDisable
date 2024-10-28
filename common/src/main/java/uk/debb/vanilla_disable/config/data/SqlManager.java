@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -229,8 +229,9 @@ public class SqlManager {
                     String columnName = resultSetMetaData.getColumnName(i);
                     if (columnName.startsWith("can_breed_with_")) {
                         if (resultSet.getBoolean(columnName)) {
-                            items.add(Objects.requireNonNull(itemRegistry.get(ResourceLocation.bySeparator(
-                                    columnName.replace("can_breed_with_", "minecraft:"), ':'))));
+                            Optional<Item> item = itemRegistry.getOptional(ResourceLocation.bySeparator(
+                                    columnName.replace("can_breed_with_", "minecraft:"), ':'));
+                            item.ifPresent(items::add);
                         }
                     }
                 }
